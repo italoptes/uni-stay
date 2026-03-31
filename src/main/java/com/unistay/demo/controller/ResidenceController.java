@@ -4,6 +4,7 @@ import com.unistay.demo.dto.ResidenceRequestDTO;
 import com.unistay.demo.dto.ResidenceResponseDTO;
 import com.unistay.demo.entity.Residence;
 import com.unistay.demo.entity.User;
+import com.unistay.demo.openapi.ResidenceControllerOpenApi;
 import com.unistay.demo.service.ResidenceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/residences")
-public class ResidenceController {
+public class ResidenceController implements ResidenceControllerOpenApi {
 
     private final ResidenceService residenceService;
 

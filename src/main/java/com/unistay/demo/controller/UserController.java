@@ -3,13 +3,14 @@ package com.unistay.demo.controller;
 import com.unistay.demo.dto.UserRequestDTO;
 import com.unistay.demo.dto.UserResponseDTO;
 import com.unistay.demo.entity.User;
+import com.unistay.demo.openapi.UserControllerOpenApi;
 import com.unistay.demo.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
-public class UserController {
+public class UserController implements UserControllerOpenApi {
 
 	private final UserService userService;
 

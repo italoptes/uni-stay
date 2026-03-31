@@ -1,6 +1,7 @@
 package com.unistay.demo.controller;
 
 import com.unistay.demo.dto.UserRequestDTO;
+import com.unistay.demo.openapi.AuthControllerOpenApi;
 import com.unistay.demo.service.JwtTokenService;
 import com.unistay.demo.entity.User;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
-public class AuthController {
+public class AuthController implements AuthControllerOpenApi {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenService tokenService;

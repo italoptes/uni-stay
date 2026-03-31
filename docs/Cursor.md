@@ -2,9 +2,9 @@
 
 ## 📌 Visão do Projeto
 
-Sistema web simples para auxiliar estudantes a cadastrar e visualizar residências disponíveis para moradia.
+Sistema web para auxiliar estudantes a cadastrar e visualizar residências disponíveis para moradia.
 
-A aplicação permitirá que usuários criem contas, façam login e gerenciem residências cadastradas de forma prática e direta.
+A aplicação permite que usuários criem contas, realizem autenticação segura e gerenciem residências de forma prática e direta.
 
 ---
 
@@ -13,7 +13,7 @@ A aplicação permitirá que usuários criem contas, façam login e gerenciem re
 Desenvolver uma aplicação funcional do zero até produção em 1 semana, utilizando boas práticas de engenharia de software como:
 
 * pequenas entregas contínuas
-* testes automatizados
+* testes automatizados (TDD)
 * organização em camadas
 * uso de IA como apoio no desenvolvimento
 
@@ -42,8 +42,11 @@ Para manter o projeto simples e executável em 1 semana, NÃO será implementado
 
 ### Backend
 
-* Java
-* Spring Boot
+* Java 21
+* Spring Boot 4
+* Spring Web MVC
+* Spring Data JPA
+* Spring Security (JWT, stateless)
 
 ### Frontend
 
@@ -58,8 +61,9 @@ Para manter o projeto simples e executável em 1 semana, NÃO será implementado
 ### Ferramentas
 
 * Git + GitHub
-* JUnit (testes)
-* Docker (opcional, apenas se necessário)
+* JUnit + Mockito (TDD)
+* Docker (planejado)
+* Swagger (springdoc-openapi)
 
 ---
 
@@ -67,18 +71,33 @@ Para manter o projeto simples e executável em 1 semana, NÃO será implementado
 
 Arquitetura em camadas:
 
-* **Controller** → entrada das requisições HTTP
-* **Service** → regras de negócio
+* **Controller** → entrada das requisições HTTP (sem lógica de negócio)
+* **Service** → regras de negócio (testadas com TDD)
 * **Repository** → acesso ao banco de dados
-* **Model** → entidades
+* **Entity** → entidades JPA
+* **DTO** → entrada/saída da API (records)
+* **Security** → autenticação e autorização (JWT)
+* **OpenAPI** → documentação Swagger separada por interface
 
 ---
 
-## 📂 Estrutura Inicial do Projeto
+## 📂 Estrutura do Projeto
 
+```
 /backend
 /frontend
 /docs
+
+/src/main/java/com/unistay/demo
+ ├── controller
+ ├── service
+ ├── repository
+ ├── entity
+ ├── security
+ ├── api/dto
+ ├── api/openapi
+ └── api/exception
+```
 
 ---
 
@@ -90,6 +109,7 @@ Arquitetura em camadas:
 * username (único)
 * password (criptografado)
 * phoneNumber
+* implementa `UserDetails` (Spring Security)
 
 ---
 
@@ -99,37 +119,59 @@ Arquitetura em camadas:
 * title
 * description
 * location
-* price
-* contactPhone (opcional)
-* user_id (dono da residência)
+* price (> 0)
+* contactPhone
+* user (dono da residência)
 
 ---
 
-## 🔐 Funcionalidades (MVP)
+## 🔐 Segurança
+
+A aplicação utiliza autenticação **stateless com JWT**:
+
+* Login via `/auth/login`
+* Token enviado via header:
+
+  ```
+  Authorization: Bearer <token>
+  ```
+* Token validado em filtro (`SecurityFilter`)
+* Usuário autenticado disponível via `SecurityContext`
+
+### Regras:
+
+* Apenas usuários autenticados podem acessar endpoints protegidos
+* Usuário só pode editar/deletar suas próprias residências
+* Nenhum `userId` é recebido via request (segurança baseada no token)
+
+---
+
+## 🧪 Funcionalidades (MVP)
 
 ### Autenticação
 
-* Cadastro de usuário (username, password, telefone)
-* Login com username e password
+* Cadastro de usuário
+* Login com geração de JWT
 
 ---
 
 ### Residências
 
-* Criar residência
+* Criar residência (autenticado)
 * Listar residências
-* Atualizar residência
-* Deletar residência
+* Atualizar residência (somente dono)
+* Deletar residência (somente dono)
 
 ---
 
 ## 🔄 Fluxo Principal
 
-1. Usuário acessa o sistema
-2. Realiza cadastro ou login
-3. Cadastra uma residência
-4. Visualiza residências disponíveis
-5. Edita ou remove suas próprias residências
+1. Usuário se cadastra
+2. Realiza login e recebe token JWT
+3. Envia token nas requisições
+4. Cadastra uma residência
+5. Visualiza residências disponíveis
+6. Edita/remove suas próprias residências
 
 ---
 
@@ -138,23 +180,50 @@ Arquitetura em camadas:
 * Usuário deve estar autenticado para cadastrar residência
 * Usuário só pode editar/deletar suas próprias residências
 * Username deve ser único
-* Password deve ser armazenado de forma segura (criptografia)
+* Password deve ser armazenado de forma segura (BCrypt)
+* Dados inválidos geram exceções tratadas globalmente
 
 ---
 
 ## 🧪 Testes
 
-* Testes unitários com JUnit
-* Testar principalmente a camada de Service
-* Garantir que regras de negócio estão corretas
+* Testes unitários com JUnit + Mockito
+* Foco na camada de Service
+* Garantia das regras de negócio via TDD
+
+---
+
+## 📡 API
+
+### Padrões utilizados:
+
+* REST
+* ResponseEntity
+* HTTP status codes corretos
+* DTOs (records) para entrada/saída
+* GlobalExceptionHandler
+
+---
+
+## 📘 Documentação (Swagger)
+
+A API possui documentação interativa via Swagger:
+
+👉 http://localhost:8080/swagger-ui.html
+
+### Características:
+
+* Documentação separada via interfaces (`api.openapi`)
+* Controllers implementam essas interfaces
+* Endpoints públicos liberados no Spring Security
 
 ---
 
 ## 🚀 Deploy
 
-* Aplicação será executada em homelab pessoal
-* Backend e banco podem rodar localmente
-* Docker será utilizado apenas se necessário
+* Aplicação rodará inicialmente em homelab
+* Backend + PostgreSQL local
+* Docker será utilizado posteriormente
 
 ---
 
@@ -163,14 +232,14 @@ Arquitetura em camadas:
 * Cada funcionalidade deve ser pequena e incremental
 * Cada commit deve estar funcional
 * Não avançar sem testar
-* Refatorar continuamente quando necessário
+* Refatorar continuamente
 * Evitar código duplicado
 
 ---
 
 ## 🤖 Uso de IA no Projeto
 
-A IA será utilizada como apoio no desenvolvimento:
+A IA é utilizada como apoio no desenvolvimento:
 
 * geração de código base
 * sugestões de implementação
@@ -181,13 +250,13 @@ O desenvolvedor é responsável por:
 
 * decisões de arquitetura
 * regras de negócio
-* validação do código gerado
+* validação do código
 
 ---
 
 ## 📈 Estratégia de Desenvolvimento
 
-O desenvolvimento seguirá ciclos curtos:
+O desenvolvimento segue ciclos curtos:
 
 1. Implementar pequena funcionalidade
 2. Testar
@@ -203,5 +272,15 @@ O desenvolvimento seguirá ciclos curtos:
 * Funcional antes de perfeito
 * Evolução contínua ao invés de planejamento excessivo
 * Disciplina no processo
+
+---
+
+## 🔮 Próximos Passos
+
+* Validação com Bean Validation (@Valid)
+* Desenvolvimento do frontend (React + Vite)
+* Integração completa frontend/backend
+* Dockerização
+* Deploy
 
 ---
