@@ -3,12 +3,16 @@ package com.unistay.demo.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +27,20 @@ public class User {
 	@Column(name = "phone_number", length = 20)
 	private String phoneNumber;
 
-	public User() {
+	public User() {}
+
+	@Override
+	public Collection getAuthorities() {
+		return List.of(); // sem roles por enquanto
+	}
+
+	@Override
+	public String getPassword() {
+		return password;
+	}
+
+	@Override
+	public String getUsername() {
+		return username;
 	}
 }

@@ -36,21 +36,6 @@ public class UserController {
 		return ResponseEntity.status(201).body(response);
 	}
 
-	@PostMapping("/login")
-	public ResponseEntity<UserResponseDTO> login(@RequestParam String username,
-	                                             @RequestParam String password) {
-
-		return userService.login(username, password)
-				.map(user -> ResponseEntity.ok(
-						new UserResponseDTO(
-								user.getId(),
-								user.getUsername(),
-								user.getPhoneNumber()
-						)
-				))
-				.orElseGet(() -> ResponseEntity.status(401).build());
-	}
-
 	@GetMapping("/{id}")
 	public ResponseEntity<UserResponseDTO> getById(@PathVariable Long id) {
 

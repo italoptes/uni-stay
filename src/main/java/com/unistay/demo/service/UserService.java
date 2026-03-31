@@ -35,13 +35,6 @@ public class UserService {
 		return userRepository.save(user);
 	}
 
-	public Optional<User> login(String username, String password) {
-		return userRepository.findByUsername(username)
-				.flatMap(user -> passwordEncoder.matches(password, user.getPassword())
-						? Optional.of(user)
-						: Optional.empty());
-	}
-
 	public Optional<User> findById(Long id) {
 		return userRepository.findById(id);
 	}

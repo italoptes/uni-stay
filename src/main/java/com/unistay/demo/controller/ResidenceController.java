@@ -3,8 +3,10 @@ package com.unistay.demo.controller;
 import com.unistay.demo.dto.ResidenceRequestDTO;
 import com.unistay.demo.dto.ResidenceResponseDTO;
 import com.unistay.demo.entity.Residence;
+import com.unistay.demo.entity.User;
 import com.unistay.demo.service.ResidenceService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +24,9 @@ public class ResidenceController {
     @PostMapping
     public ResponseEntity<ResidenceResponseDTO> create(@RequestBody ResidenceRequestDTO dto) {
 
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) auth.getPrincipal();
+
         Residence residence = new Residence();
         residence.setTitle(dto.title());
         residence.setDescription(dto.description());
@@ -29,19 +34,19 @@ public class ResidenceController {
         residence.setPrice(dto.price());
         residence.setContactPhone(dto.contactPhone());
 
-        Residence saved = residenceService.createResidence(residence, dto.userId());
+        Residence saved = residenceService.createResidence(residence, user.getId());
 
-        ResidenceResponseDTO response = new ResidenceResponseDTO(
-                saved.getId(),
-                saved.getTitle(),
-                saved.getDescription(),
-                saved.getLocation(),
-                saved.getPrice(),
-                saved.getContactPhone(),
-                saved.getUser().getId()
+        return ResponseEntity.status(201).body(
+                new ResidenceResponseDTO(
+                        saved.getId(),
+                        saved.getTitle(),
+                        saved.getDescription(),
+                        saved.getLocation(),
+                        saved.getPrice(),
+                        saved.getContactPhone(),
+                        saved.getUser().getId()
+                )
         );
-
-        return ResponseEntity.status(201).body(response);
     }
 
     @GetMapping
@@ -85,6 +90,9 @@ public class ResidenceController {
     public ResponseEntity<ResidenceResponseDTO> update(@PathVariable Long id,
                                                        @RequestBody ResidenceRequestDTO dto) {
 
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) auth.getPrincipal();
+
         Residence updated = new Residence();
         updated.setTitle(dto.title());
         updated.setDescription(dto.description());
@@ -92,26 +100,29 @@ public class ResidenceController {
         updated.setPrice(dto.price());
         updated.setContactPhone(dto.contactPhone());
 
-        Residence saved = residenceService.updateResidence(id, updated, dto.userId());
+        Residence saved = residenceService.updateResidence(id, updated, user.getId());
 
-        ResidenceResponseDTO response = new ResidenceResponseDTO(
-                saved.getId(),
-                saved.getTitle(),
-                saved.getDescription(),
-                saved.getLocation(),
-                saved.getPrice(),
-                saved.getContactPhone(),
-                saved.getUser().getId()
+        return ResponseEntity.ok(
+                new ResidenceResponseDTO(
+                        saved.getId(),
+                        saved.getTitle(),
+                        saved.getDescription(),
+                        saved.getLocation(),
+                        saved.getPrice(),
+                        saved.getContactPhone(),
+                        saved.getUser().getId()
+                )
         );
-
-        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id,
-                                       @RequestParam Long userId) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
 
-        residenceService.deleteResidence(id, userId);
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) auth.getPrincipal();
+
+        residenceService.deleteResidence(id, user.getId());
+
         return ResponseEntity.noContent().build();
     }
 }

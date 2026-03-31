@@ -7,7 +7,6 @@ public record ResidenceRequestDTO(
         String description,
         String location,
         BigDecimal price,
-        String contactPhone,
-        Long userId
+        String contactPhone
 ) {
 }
