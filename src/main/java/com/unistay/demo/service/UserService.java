@@ -1,10 +1,14 @@
 package com.unistay.demo.service;
 
+import com.unistay.demo.dto.UserRequestDTO;
+import com.unistay.demo.dto.UserResponseDTO;
 import com.unistay.demo.entity.User;
 import com.unistay.demo.repository.UserRepository;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -33,6 +37,20 @@ public class UserService {
 
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		return userRepository.save(user);
+	}
+
+	public List<UserResponseDTO> listAllUser() {
+
+		List<UserResponseDTO> list = userRepository.findAll()
+				.stream()
+				.map(user -> new UserResponseDTO(
+						user.getId(),
+						user.getUsername(),
+						user.getPhoneNumber()
+				))
+				.toList();
+
+		return list;
 	}
 
 	public Optional<User> findById(Long id) {

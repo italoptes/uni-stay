@@ -8,6 +8,8 @@ import com.unistay.demo.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/users")
 public class UserController implements UserControllerOpenApi {
@@ -35,6 +37,13 @@ public class UserController implements UserControllerOpenApi {
 		);
 
 		return ResponseEntity.status(201).body(response);
+	}
+
+	@GetMapping
+	public ResponseEntity listUsers(){
+		List<UserResponseDTO> users = userService.listAllUser();
+
+		return ResponseEntity.ok(users);
 	}
 
 	@GetMapping("/{id}")
