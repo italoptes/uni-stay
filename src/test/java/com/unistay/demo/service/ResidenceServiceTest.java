@@ -34,7 +34,7 @@ class ResidenceServiceTest {
 	private UserRepository userRepository;
 
 	@InjectMocks
-	private ResidenceServiceImpl residenceService;
+	private ResidenceService residenceService;
 
 	private User owner;
 	private Residence residenceInput;

@@ -1,18 +1,91 @@
 package com.unistay.demo.service;
 
 import com.unistay.demo.entity.Residence;
+import com.unistay.demo.entity.User;
+import com.unistay.demo.repository.ResidenceRepository;
+import com.unistay.demo.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-public interface ResidenceService {
+@Service
+public class ResidenceService {
 
-	Residence createResidence(Residence residence, Long userId);
+	private final ResidenceRepository residenceRepository;
+	private final UserRepository userRepository;
 
-	List<Residence> getAllResidences();
+	public ResidenceService(ResidenceRepository residenceRepository, UserRepository userRepository) {
+		this.residenceRepository = residenceRepository;
+		this.userRepository = userRepository;
+	}
 
-	Optional<Residence> getResidenceById(Long id);
+	public Residence createResidence(Residence residence, Long userId) {
+		validateResidence(residence);
 
-	Residence updateResidence(Long id, Residence updated, Long userId);
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-	void deleteResidence(Long id, Long userId);
+		residence.setUser(user);
+		return residenceRepository.save(residence);
+	}
+
+	public List<Residence> getAllResidences() {
+		return residenceRepository.findAll();
+	}
+
+	public Optional<Residence> getResidenceById(Long id) {
+		return residenceRepository.findById(id);
+	}
+
+	public Residence updateResidence(Long id, Residence updated, Long userId) {
+		Residence existing = residenceRepository.findById(id)
+				.orElseThrow(() -> new EntityNotFoundException("Residence not found"));
+
+		userRepository.findById(userId)
+				.orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+		if (!existing.getUser().getId().equals(userId)) {
+			throw new AccessDeniedException("User is not the owner of this residence");
+		}
+
+		validateResidence(updated);
+
+		existing.setTitle(updated.getTitle());
+		existing.setDescription(updated.getDescription());
+		existing.setLocation(updated.getLocation());
+		existing.setPrice(updated.getPrice());
+		existing.setContactPhone(updated.getContactPhone());
+
+		return residenceRepository.save(existing);
+	}
+
+	public void deleteResidence(Long id, Long userId) {
+		Residence existing = residenceRepository.findById(id)
+				.orElseThrow(() -> new EntityNotFoundException("Residence not found"));
+
+		userRepository.findById(userId)
+				.orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+		if (!existing.getUser().getId().equals(userId)) {
+			throw new AccessDeniedException("User is not the owner of this residence");
+		}
+
+		residenceRepository.delete(existing);
+	}
+
+	private void validateResidence(Residence residence) {
+		if (residence.getTitle() == null || residence.getTitle().isBlank()) {
+			throw new IllegalArgumentException("Title cannot be null or blank");
+		}
+		if (residence.getLocation() == null || residence.getLocation().isBlank()) {
+			throw new IllegalArgumentException("Location cannot be null or blank");
+		}
+		if (residence.getPrice() == null || residence.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+			throw new IllegalArgumentException("Price must be greater than zero");
+		}
+	}
 }

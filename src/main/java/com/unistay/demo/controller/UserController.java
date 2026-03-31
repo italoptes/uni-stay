@@ -1,14 +1,14 @@
 package com.unistay.demo.controller;
 
+import com.unistay.demo.dto.UserRequestDTO;
+import com.unistay.demo.dto.UserResponseDTO;
 import com.unistay.demo.entity.User;
 import com.unistay.demo.service.UserService;
-import java.util.Optional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/users")
 public class UserController {
 
 	private final UserService userService;
@@ -17,13 +17,51 @@ public class UserController {
 		this.userService = userService;
 	}
 
-	@PostMapping("/users")
-	public User createUser(@RequestBody User user) {
-		return userService.createUser(user);
+	@PostMapping
+	public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserRequestDTO dto) {
+
+		User user = new User();
+		user.setUsername(dto.username());
+		user.setPassword(dto.password());
+		user.setPhoneNumber(dto.phoneNumber());
+
+		User saved = userService.createUser(user);
+
+		UserResponseDTO response = new UserResponseDTO(
+				saved.getId(),
+				saved.getUsername(),
+				saved.getPhoneNumber()
+		);
+
+		return ResponseEntity.status(201).body(response);
 	}
 
 	@PostMapping("/login")
-	public Optional<User> login(@RequestParam String username, @RequestParam String password) {
-		return userService.login(username, password);
+	public ResponseEntity<UserResponseDTO> login(@RequestParam String username,
+	                                             @RequestParam String password) {
+
+		return userService.login(username, password)
+				.map(user -> ResponseEntity.ok(
+						new UserResponseDTO(
+								user.getId(),
+								user.getUsername(),
+								user.getPhoneNumber()
+						)
+				))
+				.orElseGet(() -> ResponseEntity.status(401).build());
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<UserResponseDTO> getById(@PathVariable Long id) {
+
+		return userService.findById(id)
+				.map(user -> ResponseEntity.ok(
+						new UserResponseDTO(
+								user.getId(),
+								user.getUsername(),
+								user.getPhoneNumber()
+						)
+				))
+				.orElse(ResponseEntity.notFound().build());
 	}
 }
