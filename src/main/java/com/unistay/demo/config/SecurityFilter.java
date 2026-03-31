@@ -6,10 +6,12 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Component
 public class SecurityFilter extends OncePerRequestFilter {
 
     private final JwtTokenService tokenService;
@@ -29,23 +31,25 @@ public class SecurityFilter extends OncePerRequestFilter {
         String token = recoverToken(request);
 
         if (token != null) {
-            String username = tokenService.validateToken(token);
+            try{
+                String username = tokenService.validateToken(token);
 
-            var user = repository.findByUsername(username).orElse(null);
+                var user = repository.findByUsername(username).orElse(null);
 
-            if (user != null) {
-                var auth = new UsernamePasswordAuthenticationToken(
-                        user, null, user.getAuthorities());
+                if (user != null) {
+                    var auth = new UsernamePasswordAuthenticationToken(
+                            user, null, user.getAuthorities());
 
-                SecurityContextHolder.getContext().setAuthentication(auth);
-            }
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                }
+            } catch (Exception ignored){}
         }
 
         filterChain.doFilter(request, response);
     }
 
     private String recoverToken(HttpServletRequest request) {
-        String header = request.getHeader("Authorization");
+        var header = request.getHeader("Authorization");
         if (header == null) return null;
         return header.replace("Bearer ", "");
     }
