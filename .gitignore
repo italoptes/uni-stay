@@ -1,4 +1,4 @@
-HELP.md
+docs/HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -33,6 +33,7 @@ node_modules/
 frontend/node_modules/
 dist/
 frontend/dist/
+.env
 
 ### VS Code ###
 .vscode/
