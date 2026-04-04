@@ -1,4 +1,26 @@
+import { useEffect, useState } from 'react';
+import api from '../services/api';
+
 function Home() {
+  const [residences, setResidences] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchResidences = async () => {
+      try {
+        const response = await api.get('/residences');
+        setResidences(Array.isArray(response.data) ? response.data : []);
+      } catch {
+        setError('Não foi possível carregar as residências no momento.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResidences();
+  }, []);
+
   return (
     <section className="space-y-8">
       <div className="space-y-3">
@@ -14,31 +36,32 @@ function Home() {
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        <article className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <p className="text-sm font-medium text-slate-500">Centro</p>
-          <h2 className="mt-3 text-xl font-semibold text-slate-900">Residência Solar</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            Espaço moderno com fácil acesso a universidades, mercados e transporte.
-          </p>
-        </article>
-
-        <article className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <p className="text-sm font-medium text-slate-500">Zona Norte</p>
-          <h2 className="mt-3 text-xl font-semibold text-slate-900">Casa Horizonte</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            Ambiente confortável para estudantes que buscam praticidade no dia a dia.
-          </p>
-        </article>
-
-        <article className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:col-span-2 xl:col-span-1">
-          <p className="text-sm font-medium text-slate-500">Zona Sul</p>
-          <h2 className="mt-3 text-xl font-semibold text-slate-900">Vila Campus</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            Estrutura acolhedora com quartos compartilhados e boa localização.
-          </p>
-        </article>
-      </div>
+      {loading ? (
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <p className="text-sm font-medium text-slate-500">Carregando residências...</p>
+        </div>
+      ) : error ? (
+        <div className="rounded-3xl border border-red-200 bg-red-50 p-6 shadow-sm">
+          <p className="text-sm font-medium text-red-600">{error}</p>
+        </div>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {residences.map((residence) => (
+            <article
+              key={residence.id}
+              className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+            >
+              <p className="text-sm font-medium text-slate-500">{residence.location}</p>
+              <h2 className="mt-3 text-xl font-semibold text-slate-900">{residence.title}</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                {typeof residence.price === 'number'
+                  ? `R$ ${residence.price.toFixed(2)}`
+                  : residence.price}
+              </p>
+            </article>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
