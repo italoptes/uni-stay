@@ -4,16 +4,22 @@ import com.unistay.demo.dto.ApiErrorResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     private ApiErrorResponse buildResponse(
             HttpStatus status,
@@ -62,17 +68,24 @@ public class GlobalExceptionHandler {
             MethodArgumentNotValidException ex,
             HttpServletRequest request
     ) {
-        String fieldErrors = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(error -> error.getField() + " -> " + error.getDefaultMessage())
-                .collect(Collectors.joining(", "));
+        logger.warn("MethodArgumentNotValidException handled for path {}", request.getRequestURI());
 
-        String message = fieldErrors.isBlank()
-                ? "Validation failed"
-                : "Validation failed: " + fieldErrors;
+        Map<String, String> fieldErrors = new LinkedHashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                fieldErrors.putIfAbsent(
+                        error.getField(),
+                        error.getDefaultMessage() == null ? "Invalid value" : error.getDefaultMessage()
+                )
+        );
 
-        return buildResponse(HttpStatus.BAD_REQUEST, message, request);
+        return new ApiErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "Validation failed",
+                "Validation error",
+                request.getRequestURI(),
+                fieldErrors
+        );
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
