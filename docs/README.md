@@ -24,7 +24,7 @@
 
 ## 📌 Sobre o Projeto
 
-O **UniStay** é uma plataforma full-stack que conecta estudantes a opções de moradia de forma segura e organizada. A aplicação foi construída com foco em **boas práticas de engenharia de software**, separação clara de responsabilidades e autenticação moderna via JWT.
+O **UniStay** é uma plataforma full-stack que conecta estudantes a opções de moradia de forma segura e organizada.A aplicação foi construída com foco em boas práticas de engenharia de software, incluindo separação clara de responsabilidades, arquitetura em camadas e autenticação moderna via JWT.
 
 Com o UniStay, o usuário pode:
 
@@ -106,7 +106,7 @@ entity → repository → service → controller
 | Camada | Responsabilidade |
 |--------|-----------------|
 | `Controllers` | Endpoints REST — sem regra de negócio |
-| `Services` | Regras de negócio — testadas com TDD |
+| `Services` | Regras de negócio |
 | `Repositories` | Acesso ao banco via JPA |
 | `DTOs` | Comunicação segura entre camadas |
 | `Security` | Autenticação JWT stateless |
@@ -132,7 +132,7 @@ pages → components → services → context → routes
 - Login via **JWT (JSON Web Token)**
 - Token armazenado no `localStorage`
 - **Interceptor Axios** para envio automático do token em todas as requisições
-- Rotas protegidas *(em andamento)*
+- Rotas protegidas no frontend
 
 ---
 
@@ -178,7 +178,10 @@ Aplicação disponível em: **`http://localhost:5173`**
 | `POST` | `/auth/login` | Autenticação do usuário |
 | `POST` | `/users` | Cadastro de novo usuário |
 | `GET` | `/residences` | Listar todas as residências |
+| `GET` | `/residences/{id}` | Buscar residência por ID |
 | `POST` | `/residences` | Criar nova residência |
+| `PUT` | `/residences/{id}` | Atualizar residência |
+| `DELETE` | `/residences/{id}` | Remover residência |
 
 > Documentação completa disponível via Swagger em `http://localhost:8080/swagger-ui.html`
 
@@ -188,12 +191,12 @@ Aplicação disponível em: **`http://localhost:5173`**
 
 | Funcionalidade | Status |
 |----------------|--------|
-| Backend completo e testado | ✅ Concluído |
+| Backend completo | ✅ Concluído |
 | Autenticação com JWT | ✅ Concluído |
 | Frontend estruturado com React + Tailwind | ✅ Concluído |
 | Login integrado com backend | ✅ Concluído |
-| Proteção de rotas no frontend | 🚧 Em andamento |
-| CRUD completo de residências no frontend | 🚧 Em andamento |
+| Proteção de rotas no frontend | ✅ Concluído |
+| CRUD completo de residências no frontend | ✅ Concluído |
 | Deploy (Docker + Cloud) | 📋 Planejado |
 
 ---
@@ -203,15 +206,13 @@ Aplicação disponível em: **`http://localhost:5173`**
 O UniStay foi desenvolvido com múltiplos propósitos:
 
 - 💼 **Portfólio profissional** — demonstração prática de habilidades full-stack
-- 🧪 **Boas práticas** — TDD, arquitetura limpa e separação de responsabilidades
+- 🧪 **Boas práticas** — arquitetura limpa e separação de responsabilidades
 - 🌍 **Solução real** — plataforma pensada para um problema concreto de estudantes universitários
 
 ---
 
 ## 📋 Próximos Passos
 
-- [ ] Proteção de rotas no frontend
-- [ ] CRUD completo de residências no frontend
 - [ ] Deploy com Docker + Cloud
 - [ ] Melhorias de UX/UI
 - [ ] Sistema de favoritos ou contato direto entre usuários

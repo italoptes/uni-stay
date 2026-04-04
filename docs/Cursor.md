@@ -50,9 +50,10 @@ Para manter o projeto simples e executável em 1 semana, NÃO será implementado
 
 ### Frontend
 
-* React
-* HTML
-* CSS
+* React + Vite
+* TailwindCSS
+* Axios
+* React Router
 
 ### Banco de Dados
 
@@ -72,7 +73,7 @@ Para manter o projeto simples e executável em 1 semana, NÃO será implementado
 Arquitetura em camadas:
 
 * **Controller** → entrada das requisições HTTP (sem lógica de negócio)
-* **Service** → regras de negócio (testadas com TDD)
+* **Service** → regras de negócio 
 * **Repository** → acesso ao banco de dados
 * **Entity** → entidades JPA
 * **DTO** → entrada/saída da API (records)
@@ -93,10 +94,10 @@ Arquitetura em camadas:
  ├── service
  ├── repository
  ├── entity
- ├── security
- ├── api/dto
- ├── api/openapi
- └── api/exception
+ ├── config
+ ├── dto
+ ├── openapi
+ └── exception
 ```
 
 ---
@@ -159,8 +160,20 @@ A aplicação utiliza autenticação **stateless com JWT**:
 
 * Criar residência (autenticado)
 * Listar residências
+* Buscar residência por ID
 * Atualizar residência (somente dono)
 * Deletar residência (somente dono)
+
+---
+
+### Frontend
+
+* Login integrado com backend
+* Cadastro de usuário
+* Rotas protegidas funcionando
+* CRUD completo de residências
+* Estado de autenticação com Context API
+* Integração completa com API backend via Axios
 
 ---
 
@@ -187,9 +200,9 @@ A aplicação utiliza autenticação **stateless com JWT**:
 
 ## 🧪 Testes
 
-* Testes unitários com JUnit + Mockito
-* Foco na camada de Service
-* Garantia das regras de negócio via TDD
+* Testes unitários planejados com JUnit + Mockito
+* Foco previsto na camada de Service
+* TDD não está ativo no estado atual do repositório
 
 ---
 
@@ -214,6 +227,7 @@ A API possui documentação interativa via Swagger:
 ### Características:
 
 * Documentação separada via interfaces (`api.openapi`)
+* Implementação atual em `com.unistay.demo.openapi`
 * Controllers implementam essas interfaces
 * Endpoints públicos liberados no Spring Security
 
@@ -278,8 +292,7 @@ O desenvolvimento segue ciclos curtos:
 ## 🔮 Próximos Passos
 
 * Validação com Bean Validation (@Valid)
-* Desenvolvimento do frontend (React + Vite)
-* Integração completa frontend/backend
+* Melhorias de UX/UI
 * Dockerização
 * Deploy
 
