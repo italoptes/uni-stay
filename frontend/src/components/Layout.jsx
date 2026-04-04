@@ -1,17 +1,33 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 function Layout() {
+  const navigate = useNavigate();
   const { isAuthenticated, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   const navItems = isAuthenticated
     ? [
+        { to: '/', label: 'Início' },
+        { to: '/my-residences', label: 'Minhas residências' },
         { to: '/residences/new', label: 'Nova residência' },
-        { label: 'Sair', onClick: logout },
       ]
     : [
+        { to: '/', label: 'Início' },
         { to: '/login', label: 'Entrar' },
         { to: '/register', label: 'Cadastrar' },
       ];
+
+  const getNavLinkClassName = ({ isActive }) =>
+    `rounded-full px-4 py-2 text-sm font-medium transition ${
+      isActive
+        ? 'bg-slate-900 text-white'
+        : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+    }`;
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900">
@@ -22,45 +38,21 @@ function Layout() {
           </NavLink>
 
           <nav className="flex items-center gap-2 sm:gap-3">
-            <NavLink
-              to="/"
-              className={({ isActive }) =>
-                `rounded-full px-4 py-2 text-sm font-medium transition ${
-                  isActive
-                    ? 'bg-slate-900 text-white'
-                    : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'
-                }`
-              }
-            >
-              Início
-            </NavLink>
+            {navItems.map((item) => (
+              <NavLink key={item.to} to={item.to} className={getNavLinkClassName}>
+                {item.label}
+              </NavLink>
+            ))}
 
-            {navItems.map((item) =>
-              item.to ? (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  className={({ isActive }) =>
-                    `rounded-full px-4 py-2 text-sm font-medium transition ${
-                      isActive
-                        ? 'bg-slate-900 text-white'
-                        : 'text-slate-600 hover:bg-slate-200 hover:text-slate-900'
-                    }`
-                  }
-                >
-                  {item.label}
-                </NavLink>
-              ) : (
-                <button
-                  key={item.label}
-                  type="button"
-                  onClick={item.onClick}
-                  className="rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-200 hover:text-slate-900"
-                >
-                  {item.label}
-                </button>
-              ),
-            )}
+            {isAuthenticated ? (
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-200 hover:text-slate-900"
+              >
+                Sair
+              </button>
+            ) : null}
           </nav>
         </div>
       </header>
