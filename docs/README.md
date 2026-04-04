@@ -29,9 +29,10 @@ O **UniStay** é uma plataforma full-stack que conecta estudantes a opções de 
 Com o UniStay, o usuário pode:
 
 - 🔐 Criar conta e autenticar-se com segurança (JWT stateless)
-- 🏠 Cadastrar e gerenciar suas propriedades
-- 🔍 Visualizar residências disponíveis
-- 📋 Administrar suas próprias publicações
+- 🔍 Visualizar residências disponíveis sem precisar de login
+- 🏠 Visualizar detalhes de residências publicadas
+- 🏠 Cadastrar e gerenciar suas próprias residências após autenticação
+- 📋 Administrar suas próprias publicações em uma área pessoal
 
 ---
 
@@ -132,7 +133,28 @@ pages → components → services → context → routes
 - Login via **JWT (JSON Web Token)**
 - Token armazenado no `localStorage`
 - **Interceptor Axios** para envio automático do token em todas as requisições
-- Rotas protegidas no frontend
+- Rotas protegidas no frontend para ações privadas
+
+### Acesso Público
+
+- `GET /residences`
+- `GET /residences/{id}`
+- Página inicial `"/"`
+
+Sem autenticação, o usuário pode:
+
+- visualizar todas as residências
+- acessar os detalhes de cada residência
+
+### Acesso Autenticado
+
+Usuários autenticados podem:
+
+- criar residências
+- editar e remover apenas suas próprias residências
+- acessar a página pessoal `"/my-residences"`
+
+> A autorização de edição e remoção continua sendo validada no backend com base no usuário autenticado via JWT.
 
 ---
 
@@ -177,13 +199,122 @@ Aplicação disponível em: **`http://localhost:5173`**
 |--------|------|-----------|
 | `POST` | `/auth/login` | Autenticação do usuário |
 | `POST` | `/users` | Cadastro de novo usuário |
-| `GET` | `/residences` | Listar todas as residências |
-| `GET` | `/residences/{id}` | Buscar residência por ID |
-| `POST` | `/residences` | Criar nova residência |
-| `PUT` | `/residences/{id}` | Atualizar residência |
-| `DELETE` | `/residences/{id}` | Remover residência |
+| `GET` | `/residences` | Listar todas as residências (público) |
+| `GET` | `/residences/{id}` | Buscar residência por ID (público) |
+| `GET` | `/residences/me` | Listar residências do usuário autenticado |
+| `POST` | `/residences` | Criar nova residência (autenticado) |
+| `PUT` | `/residences/{id}` | Atualizar residência própria (autenticado) |
+| `DELETE` | `/residences/{id}` | Remover residência própria (autenticado) |
 
 > Documentação completa disponível via Swagger em `http://localhost:8080/swagger-ui.html`
+
+### `GET /residences/me`
+
+Retorna apenas as residências pertencentes ao usuário autenticado.
+
+- utiliza o usuário resolvido a partir do JWT
+- não recebe `userId` na request
+- é usado pelo frontend na página `"/my-residences"`
+
+---
+
+## 🖥️ Comportamento do Frontend
+
+### Home Page
+
+- pública
+- exibe todas as residências
+- comportamento somente leitura
+- contém navegação `Ver detalhes`
+- não exibe ações de editar ou excluir
+
+### Página de Detalhes
+
+- rota pública: `"/residences/:id"`
+- exibe as informações da residência selecionada
+
+### Página `"/my-residences"`
+
+- protegida por autenticação
+- lista apenas as residências do usuário autenticado
+- permite editar e excluir
+
+### Navbar
+
+Sem autenticação:
+
+- `Início`
+- `Entrar`
+- `Cadastrar`
+
+Com autenticação:
+
+- `Início`
+- `Minhas residências`
+- `Nova residência`
+- `Sair`
+
+---
+
+## ✅ Validação e Tratamento de Erros
+
+O backend utiliza **Bean Validation** nos DTOs de entrada e tratamento centralizado com `GlobalExceptionHandler`.
+
+### Respostas estruturadas de validação
+
+Erros de validação de payload retornam HTTP `400` com estrutura compatível para consumo do frontend:
+
+```json
+{
+  "timestamp": "2026-04-04T16:00:00",
+  "status": 400,
+  "error": "Validation failed",
+  "message": "Validation error",
+  "path": "/users",
+  "errors": {
+    "username": "must not be blank",
+    "password": "size must be between 6 and 255"
+  }
+}
+```
+
+### Status importantes
+
+- `400` → erros de validação
+- `401` → falha de autenticação, como credenciais inválidas
+- `403` → falha de autorização, como tentativa de editar ou excluir residência de outro usuário
+
+---
+
+## ✨ Melhorias de UX
+
+- feedback de validação por campo nos formulários de cadastro, login e residências
+- mensagens gerais de erro para falhas não relacionadas a campos específicos
+- mensagens de sucesso após ações importantes
+  - cadastro de usuário
+  - criação de residência
+  - atualização de residência
+  - remoção de residência
+
+---
+
+## 🔄 Fluxo Principal Atual
+
+1. Usuário acessa a plataforma sem precisar de login
+2. Navega pela listagem pública de residências
+3. Visualiza os detalhes de uma residência
+4. Realiza cadastro ou login
+5. Gerencia suas próprias residências em `"/my-residences"`
+
+---
+
+## 🚀 Melhorias Recentes
+
+- separação clara entre acesso público e ações privadas
+- endpoint `GET /residences/me` para gerenciamento por usuário autenticado
+- validação com resposta estruturada por campo
+- melhor feedback visual de erro e sucesso no frontend
+- página pessoal para gerenciamento das residências do usuário
 
 ---
 
@@ -195,8 +326,8 @@ Aplicação disponível em: **`http://localhost:5173`**
 | Autenticação com JWT | ✅ Concluído |
 | Frontend estruturado com React + Tailwind | ✅ Concluído |
 | Login integrado com backend | ✅ Concluído |
-| Proteção de rotas no frontend | ✅ Concluído |
-| CRUD completo de residências no frontend | ✅ Concluído |
+| Separação entre rotas públicas e protegidas | ✅ Concluído |
+| CRUD de residências com área pessoal do usuário | ✅ Concluído |
 | Deploy (Docker + Cloud) | 📋 Planejado |
 
 ---
@@ -214,7 +345,7 @@ O UniStay foi desenvolvido com múltiplos propósitos:
 ## 📋 Próximos Passos
 
 - [ ] Deploy com Docker + Cloud
-- [ ] Melhorias de UX/UI
+- [x] Melhorias iniciais de UX/UI
 - [ ] Sistema de favoritos ou contato direto entre usuários
 
 ---

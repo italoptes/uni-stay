@@ -4,7 +4,7 @@
 
 Sistema web para auxiliar estudantes a cadastrar e visualizar residências disponíveis para moradia.
 
-A aplicação permite que usuários criem contas, realizem autenticação segura e gerenciem residências de forma prática e direta.
+A aplicação permite navegação pública pelas residências e, após autenticação, gerenciamento das publicações próprias de forma prática e direta.
 
 ---
 
@@ -141,7 +141,9 @@ A aplicação utiliza autenticação **stateless com JWT**:
 
 ### Regras:
 
-* Apenas usuários autenticados podem acessar endpoints protegidos
+* `GET /residences` e `GET /residences/{id}` são públicos
+* `GET /residences/me` exige autenticação
+* Apenas usuários autenticados podem acessar endpoints protegidos de criação e manutenção
 * Usuário só pode editar/deletar suas próprias residências
 * Nenhum `userId` é recebido via request (segurança baseada no token)
 
@@ -158,9 +160,10 @@ A aplicação utiliza autenticação **stateless com JWT**:
 
 ### Residências
 
+* Listar residências publicamente
+* Buscar residência por ID publicamente
+* Buscar residências do usuário autenticado em `/residences/me`
 * Criar residência (autenticado)
-* Listar residências
-* Buscar residência por ID
 * Atualizar residência (somente dono)
 * Deletar residência (somente dono)
 
@@ -170,8 +173,11 @@ A aplicação utiliza autenticação **stateless com JWT**:
 
 * Login integrado com backend
 * Cadastro de usuário
-* Rotas protegidas funcionando
-* CRUD completo de residências
+* Home pública e somente leitura
+* Página pública de detalhes da residência
+* Página protegida `"/my-residences"`
+* Rotas públicas e protegidas funcionando
+* CRUD de residências para o próprio usuário
 * Estado de autenticação com Context API
 * Integração completa com API backend via Axios
 
@@ -179,22 +185,24 @@ A aplicação utiliza autenticação **stateless com JWT**:
 
 ## 🔄 Fluxo Principal
 
-1. Usuário se cadastra
-2. Realiza login e recebe token JWT
-3. Envia token nas requisições
-4. Cadastra uma residência
-5. Visualiza residências disponíveis
-6. Edita/remove suas próprias residências
+1. Usuário acessa a plataforma sem login
+2. Visualiza a listagem pública de residências
+3. Abre os detalhes de uma residência
+4. Se cadastra ou realiza login e recebe token JWT
+5. Envia token nas requisições autenticadas
+6. Gerencia suas próprias residências em `"/my-residences"`
 
 ---
 
 ## ⚙️ Regras de Negócio
 
+* Usuário não precisa estar autenticado para listar residências ou ver detalhes
 * Usuário deve estar autenticado para cadastrar residência
 * Usuário só pode editar/deletar suas próprias residências
+* Usuário autenticado pode listar apenas suas próprias residências com `/residences/me`
 * Username deve ser único
 * Password deve ser armazenado de forma segura (BCrypt)
-* Dados inválidos geram exceções tratadas globalmente
+* Dados inválidos geram exceções tratadas globalmente com respostas estruturadas
 
 ---
 
@@ -215,6 +223,30 @@ A aplicação utiliza autenticação **stateless com JWT**:
 * HTTP status codes corretos
 * DTOs (records) para entrada/saída
 * GlobalExceptionHandler
+* respostas estruturadas para erros de validação
+
+### Validação e erros
+
+* Bean Validation aplicada nos DTOs de entrada
+* `400` para erros de validação
+* `401` para falhas de autenticação
+* `403` para falhas de autorização
+
+Exemplo de resposta de validação:
+
+```json
+{
+  "errors": {
+    "field": "message"
+  }
+}
+```
+
+### UX do frontend
+
+* feedback de erro por campo em formulários
+* mensagens gerais para erros de autenticação ou falhas inesperadas
+* mensagens de sucesso após cadastro, criação, edição e exclusão
 
 ---
 
@@ -291,9 +323,19 @@ O desenvolvimento segue ciclos curtos:
 
 ## 🔮 Próximos Passos
 
-* Validação com Bean Validation (@Valid)
 * Melhorias de UX/UI
 * Dockerização
 * Deploy
+
+---
+
+## 🆕 Melhorias Recentes
+
+* separação entre navegação pública e operações autenticadas
+* endpoint `GET /residences/me`
+* home pública com visualização somente leitura
+* página `"/my-residences"` para gerenciamento do usuário
+* validação estruturada com erros por campo
+* feedback visual de sucesso e erro no frontend
 
 ---
