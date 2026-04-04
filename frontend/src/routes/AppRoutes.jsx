@@ -4,6 +4,8 @@ import CreateResidence from '../pages/CreateResidence';
 import EditResidence from '../pages/EditResidence';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
+import MyResidences from '../pages/MyResidences';
+import ResidenceDetails from '../pages/ResidenceDetails';
 import Register from '../pages/Register';
 import ProtectedRoute from './ProtectedRoute';
 
@@ -11,14 +13,8 @@ function AppRoutes() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/" element={<Home />} />
+        <Route path="/residences/:id" element={<ResidenceDetails />} />
         <Route
           path="/residences/new"
           element={
@@ -32,6 +28,14 @@ function AppRoutes() {
           element={
             <ProtectedRoute>
               <EditResidence />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-residences"
+          element={
+            <ProtectedRoute>
+              <MyResidences />
             </ProtectedRoute>
           }
         />
