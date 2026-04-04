@@ -88,6 +88,28 @@ public class ResidenceController implements ResidenceControllerOpenApi {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<List<ResidenceResponseDTO>> getMine() {
+
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) auth.getPrincipal();
+
+        List<ResidenceResponseDTO> response = residenceService.getResidencesByUser(user.getId())
+                .stream()
+                .map(r -> new ResidenceResponseDTO(
+                        r.getId(),
+                        r.getTitle(),
+                        r.getDescription(),
+                        r.getLocation(),
+                        r.getPrice(),
+                        r.getContactPhone(),
+                        r.getUser().getId()
+                ))
+                .toList();
+
+        return ResponseEntity.ok(response);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<ResidenceResponseDTO> update(@PathVariable Long id,
                                                        @RequestBody @Valid ResidenceRequestDTO dto) {

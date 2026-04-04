@@ -2,6 +2,7 @@ package com.unistay.demo.config;
 
 import com.unistay.demo.config.SecurityFilter;
 import org.springframework.context.annotation.*;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.*;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,6 +34,8 @@ public class SecurityConfig {
 				.sessionManagement(session ->
 						session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
+						.requestMatchers(HttpMethod.GET, "/residences/me").authenticated()
+						.requestMatchers(HttpMethod.GET, "/residences", "/residences/*").permitAll()
 
 						.requestMatchers(
 								"/auth/login",

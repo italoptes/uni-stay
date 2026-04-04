@@ -40,6 +40,13 @@ public class ResidenceService {
 		return residenceRepository.findById(id);
 	}
 
+	public List<Residence> getResidencesByUser(Long userId) {
+		userRepository.findById(userId)
+				.orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+		return residenceRepository.findByUserId(userId);
+	}
+
 	public Residence updateResidence(Long id, Residence updated, Long userId) {
 		Residence existing = residenceRepository.findById(id)
 				.orElseThrow(() -> new EntityNotFoundException("Residence not found"));
