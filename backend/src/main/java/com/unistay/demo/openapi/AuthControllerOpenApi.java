@@ -1,6 +1,7 @@
 package com.unistay.demo.openapi;
 
 import com.unistay.demo.dto.LoginRequestDTO;
+import com.unistay.demo.dto.LoginResponseDTO;
 import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.responses.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,5 +19,5 @@ public interface AuthControllerOpenApi {
             @ApiResponse(responseCode = "200", description = "Login realizado com sucesso"),
             @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
     })
-    ResponseEntity<String> login(LoginRequestDTO dto);
+    ResponseEntity<LoginResponseDTO> login(LoginRequestDTO dto);
 }

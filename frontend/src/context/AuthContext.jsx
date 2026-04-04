@@ -19,8 +19,7 @@ function AuthProvider({ children }) {
 
   const login = async (username, password) => {
     const response = await api.post('/auth/login', { username, password });
-    const nextToken = response.data;
-
+    const nextToken = response.data.token;
     setToken(nextToken);
 
     return nextToken;
