@@ -23,46 +23,42 @@ function Home() {
   }, []);
 
   return (
-    <section className="space-y-8">
-      <div className="space-y-3">
-        <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700">
-          Plataforma UniStay
-        </span>
-        <h1 className="text-3xl font-semibold tracking-tight text-slate-950 md:text-4xl">
+    <section className="space-y-6">
+      <div className="text-center">
+        <h1 className="mb-2 text-2xl font-semibold tracking-tight text-gray-800">
           Residências disponíveis
         </h1>
-        <p className="max-w-2xl text-base leading-7 text-slate-600">
-          Encontre moradias estudantis com uma experiência simples, clara e pronta para
-          crescer com os próximos recursos da plataforma.
+        <p className="mx-auto mb-6 max-w-sm text-sm leading-relaxed text-gray-500">
+          Encontre moradias estudantis com uma navegação simples e organizada.
         </p>
       </div>
 
       {loading ? (
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <p className="text-sm font-medium text-slate-500">Carregando residências...</p>
+        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <p className="text-sm text-gray-500">Carregando residências...</p>
         </div>
       ) : error ? (
-        <div className="rounded-3xl border border-red-200 bg-red-50 p-6 shadow-sm">
+        <div className="rounded-xl border border-red-200 bg-red-50 p-6 shadow-sm">
           <p className="text-sm font-medium text-red-600">{error}</p>
         </div>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-4">
           {residences.map((residence) => (
             <article
               key={residence.id}
-              className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+              className="flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
             >
-              <p className="text-sm font-medium text-slate-500">{residence.location}</p>
-              <h2 className="mt-3 text-xl font-semibold text-slate-900">{residence.title}</h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
+              <h2 className="text-base font-semibold text-gray-800">{residence.title}</h2>
+              <p className="text-sm text-gray-500">{residence.location}</p>
+              <p className="text-sm font-semibold text-green-600">
                 {typeof residence.price === 'number'
                   ? `R$ ${residence.price.toFixed(2)}`
                   : residence.price}
               </p>
-              <div className="mt-4 flex gap-3">
+              <div className="mt-2">
                 <Link
                   to={`/residences/${residence.id}`}
-                  className="inline-flex rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
+                  className="inline-flex w-full items-center justify-center rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-green-700"
                 >
                   Ver detalhes
                 </Link>

@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import api from '../services/api';
+import { useParams, useNavigate } from 'react-router-dom';
 
 function ResidenceDetails() {
   const { id } = useParams();
   const [residence, setResidence] = useState(null);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const fetchResidence = async () => {
@@ -86,6 +88,15 @@ function ResidenceDetails() {
             <dd className="mt-1 text-base text-slate-900">{residence.contactPhone}</dd>
           </div>
         </dl>
+      </div>
+
+      <div className="mt-4 flex justify-center">
+        <button
+            onClick={() => navigate('/')}
+            className="rounded-lg border border-gray-300 px-6 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100"
+        >
+          Voltar
+        </button>
       </div>
     </section>
   );

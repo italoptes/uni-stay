@@ -65,23 +65,31 @@ function Login() {
   };
 
   return (
-    <section className="flex min-h-[calc(100vh-12rem)] items-center justify-center">
-      <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-        <div className="space-y-3 text-center">
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-950">
+    <section className="mt-6 mb-6">
+      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="mb-6 text-center">
+          <h1 className="mb-2 text-2xl font-semibold tracking-tight text-gray-800">
             Entrar na conta
           </h1>
-          <p className="text-sm leading-6 text-slate-600">
+          <p className="mx-auto max-w-sm text-sm leading-relaxed text-gray-500">
             Acesse sua conta para acompanhar residências e futuras reservas.
           </p>
         </div>
 
-        <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
-          {successMessage ? <p className="text-green-500">{successMessage}</p> : null}
-          {errorMessage ? <p className="text-red-500">{errorMessage}</p> : null}
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          {successMessage ? (
+            <p className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+              {successMessage}
+            </p>
+          ) : null}
+          {errorMessage ? (
+            <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {errorMessage}
+            </p>
+          ) : null}
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-slate-700" htmlFor="username">
+            <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="username">
               Usuário
             </label>
             <input
@@ -90,7 +98,7 @@ function Login() {
               type="text"
               value={formData.username}
               onChange={handleChange}
-              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white"
+              className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500"
               placeholder="Digite seu usuário"
               autoComplete="username"
               required
@@ -101,7 +109,7 @@ function Login() {
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-slate-700" htmlFor="password">
+            <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="password">
               Senha
             </label>
             <input
@@ -110,7 +118,7 @@ function Login() {
               type="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white"
+              className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500"
               placeholder="Digite sua senha"
               autoComplete="current-password"
               required
@@ -123,7 +131,7 @@ function Login() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
+            className="w-full rounded-lg bg-green-600 py-2.5 text-sm font-medium text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isSubmitting ? 'Entrando...' : 'Entrar'}
           </button>
