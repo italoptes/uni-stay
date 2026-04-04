@@ -1,4 +1,41 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import api from '../services/api';
+
 function Register() {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    username: '',
+    password: '',
+    phoneNumber: '',
+  });
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+
+    setFormData((current) => ({
+      ...current,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setErrorMessage('');
+    setIsSubmitting(true);
+
+    try {
+      await api.post('/users', formData);
+      navigate('/login');
+    } catch (error) {
+      setErrorMessage('Não foi possível realizar o cadastro. Verifique os dados e tente novamente.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <section className="flex min-h-[calc(100vh-12rem)] items-center justify-center">
       <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
@@ -11,23 +48,71 @@ function Register() {
           </p>
         </div>
 
-        <div className="mt-8 space-y-4">
-          <div className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
-            Nome completo
+        <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-slate-700" htmlFor="username">
+              Usuário
+            </label>
+            <input
+              id="username"
+              name="username"
+              type="text"
+              value={formData.username}
+              onChange={handleChange}
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white"
+              placeholder="Digite seu usuário"
+              autoComplete="username"
+              required
+            />
           </div>
-          <div className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
-            E-mail
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-slate-700" htmlFor="phoneNumber">
+              Telefone
+            </label>
+            <input
+              id="phoneNumber"
+              name="phoneNumber"
+              type="tel"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white"
+              placeholder="Digite seu telefone"
+              autoComplete="tel"
+            />
           </div>
-          <div className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
-            Senha
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-slate-700" htmlFor="password">
+              Senha
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white"
+              placeholder="Digite sua senha"
+              autoComplete="new-password"
+              required
+            />
           </div>
+
+          {errorMessage ? (
+            <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {errorMessage}
+            </p>
+          ) : null}
+
           <button
-            type="button"
-            className="w-full rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-medium text-white"
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-medium text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            Cadastrar
+            {isSubmitting ? 'Cadastrando...' : 'Cadastrar'}
           </button>
-        </div>
+        </form>
       </div>
     </section>
   );

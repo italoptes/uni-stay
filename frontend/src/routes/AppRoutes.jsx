@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import Layout from '../components/Layout';
 import CreateResidence from '../pages/CreateResidence';
+import EditResidence from '../pages/EditResidence';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
@@ -23,6 +24,14 @@ function AppRoutes() {
           element={
             <ProtectedRoute>
               <CreateResidence />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/residences/:id/edit"
+          element={
+            <ProtectedRoute>
+              <EditResidence />
             </ProtectedRoute>
           }
         />
