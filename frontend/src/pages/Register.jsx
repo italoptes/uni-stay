@@ -35,6 +35,7 @@ function Register() {
 
     try {
       await api.post('/users', formData);
+      localStorage.setItem('successMessage', 'Cadastro realizado com sucesso!');
       navigate('/login');
     } catch (error) {
       const fieldErrors = error.response?.data?.errors;

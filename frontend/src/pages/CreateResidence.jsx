@@ -41,7 +41,8 @@ function CreateResidence() {
         ...formData,
         price: Number(formData.price),
       });
-      navigate('/');
+      localStorage.setItem('successMessage', 'Residência criada com sucesso!');
+      navigate('/my-residences');
     } catch (error) {
       const errors = error.response?.data?.errors;
 

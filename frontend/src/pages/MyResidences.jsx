@@ -5,8 +5,16 @@ import api from '../services/api';
 function MyResidences() {
   const [residences, setResidences] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
+    const storedSuccessMessage = localStorage.getItem('successMessage');
+
+    if (storedSuccessMessage) {
+      setSuccessMessage(storedSuccessMessage);
+      localStorage.removeItem('successMessage');
+    }
+
     const fetchResidences = async () => {
       try {
         const response = await api.get('/residences/me');
@@ -21,6 +29,18 @@ function MyResidences() {
     fetchResidences();
   }, []);
 
+  useEffect(() => {
+    if (!successMessage) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setSuccessMessage('');
+    }, 3000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [successMessage]);
+
   const handleDeleteResidence = async (id) => {
     const confirmed = window.confirm('Tem certeza que deseja excluir esta residência?');
 
@@ -33,6 +53,7 @@ function MyResidences() {
       setResidences((currentResidences) =>
         currentResidences.filter((residence) => residence.id !== id),
       );
+      setSuccessMessage('Residência removida com sucesso!');
     } catch (error) {
       console.error('Não foi possível excluir a residência.', error);
     }
@@ -47,6 +68,7 @@ function MyResidences() {
         <p className="max-w-2xl text-base leading-7 text-slate-600">
           Gerencie os imóveis cadastrados na sua conta.
         </p>
+        {successMessage ? <p className="text-green-500">{successMessage}</p> : null}
       </div>
 
       {loading ? (

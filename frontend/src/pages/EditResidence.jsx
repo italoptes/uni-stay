@@ -66,6 +66,7 @@ function EditResidence() {
         ...formData,
         price: Number(formData.price),
       });
+      localStorage.setItem('successMessage', 'Residência atualizada com sucesso!');
       navigate('/my-residences');
     } catch (error) {
       const errors = error.response?.data?.errors;

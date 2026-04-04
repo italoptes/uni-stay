@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -9,9 +9,19 @@ function Login() {
     username: '',
     password: '',
   });
+  const [successMessage, setSuccessMessage] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const storedSuccessMessage = localStorage.getItem('successMessage');
+
+    if (storedSuccessMessage) {
+      setSuccessMessage(storedSuccessMessage);
+      localStorage.removeItem('successMessage');
+    }
+  }, []);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -67,6 +77,7 @@ function Login() {
         </div>
 
         <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
+          {successMessage ? <p className="text-green-500">{successMessage}</p> : null}
           {errorMessage ? <p className="text-red-500">{errorMessage}</p> : null}
 
           <div className="space-y-2">
