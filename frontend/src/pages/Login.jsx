@@ -9,6 +9,7 @@ function Login() {
     username: '',
     password: '',
   });
+  const [fieldErrors, setFieldErrors] = useState({});
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -19,18 +20,35 @@ function Login() {
       ...current,
       [name]: value,
     }));
+
+    setFieldErrors((current) => ({
+      ...current,
+      [name]: null,
+    }));
+    setErrorMessage('');
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setErrorMessage('');
+    setFieldErrors({});
     setIsSubmitting(true);
 
     try {
       await login(formData.username, formData.password);
       navigate('/');
     } catch (error) {
-      setErrorMessage('Não foi possível entrar. Verifique seus dados e tente novamente.');
+      const errors = error.response?.data?.errors;
+      const status = error.response?.status;
+
+      if (errors && typeof errors === 'object') {
+        setFieldErrors(errors);
+        setErrorMessage('');
+      } else if (status === 401) {
+        setErrorMessage('Usuário ou senha inválidos');
+      } else {
+        setErrorMessage('Não foi possível entrar. Verifique seus dados e tente novamente.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -49,6 +67,8 @@ function Login() {
         </div>
 
         <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
+          {errorMessage ? <p className="text-red-500">{errorMessage}</p> : null}
+
           <div className="space-y-2">
             <label className="block text-sm font-medium text-slate-700" htmlFor="username">
               Usuário
@@ -64,6 +84,9 @@ function Login() {
               autoComplete="username"
               required
             />
+            {fieldErrors.username ? (
+              <p className="text-sm text-red-500">{fieldErrors.username}</p>
+            ) : null}
           </div>
 
           <div className="space-y-2">
@@ -81,13 +104,10 @@ function Login() {
               autoComplete="current-password"
               required
             />
+            {fieldErrors.password ? (
+              <p className="text-sm text-red-500">{fieldErrors.password}</p>
+            ) : null}
           </div>
-
-          {errorMessage ? (
-            <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              {errorMessage}
-            </p>
-          ) : null}
 
           <button
             type="submit"

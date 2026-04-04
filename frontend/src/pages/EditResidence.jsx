@@ -12,6 +12,7 @@ function EditResidence() {
     price: '',
     contactPhone: '',
   });
+  const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -46,11 +47,18 @@ function EditResidence() {
       ...current,
       [name]: value,
     }));
+
+    setFieldErrors((current) => ({
+      ...current,
+      [name]: null,
+    }));
+    setErrorMessage('');
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setErrorMessage('');
+    setFieldErrors({});
     setIsSubmitting(true);
 
     try {
@@ -58,9 +66,16 @@ function EditResidence() {
         ...formData,
         price: Number(formData.price),
       });
-      navigate('/');
-    } catch {
-      setErrorMessage('Não foi possível atualizar a residência. Tente novamente.');
+      navigate('/my-residences');
+    } catch (error) {
+      const errors = error.response?.data?.errors;
+
+      if (errors && typeof errors === 'object') {
+        setFieldErrors(errors);
+        setErrorMessage('');
+      } else {
+        setErrorMessage('Erro ao salvar residência');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -89,6 +104,8 @@ function EditResidence() {
         </div>
 
         <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
+          {errorMessage ? <p className="text-red-500">{errorMessage}</p> : null}
+
           <div className="space-y-2">
             <label className="block text-sm font-medium text-slate-700" htmlFor="title">
               Título
@@ -103,6 +120,7 @@ function EditResidence() {
               placeholder="Digite o título da residência"
               required
             />
+            {fieldErrors.title ? <p className="text-sm text-red-500">{fieldErrors.title}</p> : null}
           </div>
 
           <div className="space-y-2">
@@ -118,6 +136,9 @@ function EditResidence() {
               placeholder="Descreva a residência"
               required
             />
+            {fieldErrors.description ? (
+              <p className="text-sm text-red-500">{fieldErrors.description}</p>
+            ) : null}
           </div>
 
           <div className="space-y-2">
@@ -134,6 +155,9 @@ function EditResidence() {
               placeholder="Digite a localização"
               required
             />
+            {fieldErrors.location ? (
+              <p className="text-sm text-red-500">{fieldErrors.location}</p>
+            ) : null}
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
@@ -153,6 +177,9 @@ function EditResidence() {
                 placeholder="Digite o preço"
                 required
               />
+              {fieldErrors.price ? (
+                <p className="text-sm text-red-500">{fieldErrors.price}</p>
+              ) : null}
             </div>
 
             <div className="space-y-2">
@@ -169,14 +196,11 @@ function EditResidence() {
                 placeholder="Digite o telefone"
                 required
               />
+              {fieldErrors.contactPhone ? (
+                <p className="text-sm text-red-500">{fieldErrors.contactPhone}</p>
+              ) : null}
             </div>
           </div>
-
-          {errorMessage ? (
-            <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              {errorMessage}
-            </p>
-          ) : null}
 
           <button
             type="submit"

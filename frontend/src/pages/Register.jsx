@@ -9,6 +9,7 @@ function Register() {
     password: '',
     phoneNumber: '',
   });
+  const [errors, setErrors] = useState({});
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -19,18 +20,30 @@ function Register() {
       ...current,
       [name]: value,
     }));
+
+    setErrors((current) => ({
+      ...current,
+      [name]: null,
+    }));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setErrorMessage('');
+    setErrors({});
     setIsSubmitting(true);
 
     try {
       await api.post('/users', formData);
       navigate('/login');
     } catch (error) {
-      setErrorMessage('Não foi possível realizar o cadastro. Verifique os dados e tente novamente.');
+      const fieldErrors = error.response?.data?.errors;
+
+      if (fieldErrors && typeof fieldErrors === 'object') {
+        setErrors(fieldErrors);
+      } else {
+        setErrorMessage('Erro ao cadastrar usuário');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -64,6 +77,7 @@ function Register() {
               autoComplete="username"
               required
             />
+            {errors.username ? <p className="text-sm text-red-500">{errors.username}</p> : null}
           </div>
 
           <div className="space-y-2">
@@ -80,6 +94,9 @@ function Register() {
               placeholder="Digite seu telefone"
               autoComplete="tel"
             />
+            {errors.phoneNumber ? (
+              <p className="text-sm text-red-500">{errors.phoneNumber}</p>
+            ) : null}
           </div>
 
           <div className="space-y-2">
@@ -97,6 +114,7 @@ function Register() {
               autoComplete="new-password"
               required
             />
+            {errors.password ? <p className="text-sm text-red-500">{errors.password}</p> : null}
           </div>
 
           {errorMessage ? (
