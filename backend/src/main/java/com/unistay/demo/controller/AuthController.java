@@ -1,7 +1,7 @@
 package com.unistay.demo.controller;
 
 import com.unistay.demo.dto.LoginRequestDTO;
-import com.unistay.demo.dto.UserRequestDTO;
+import com.unistay.demo.dto.LoginResponseDTO;
 import com.unistay.demo.openapi.AuthControllerOpenApi;
 import com.unistay.demo.service.JwtTokenService;
 import com.unistay.demo.entity.User;
@@ -23,17 +23,15 @@ public class AuthController implements AuthControllerOpenApi {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequestDTO dto) {
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO dto) {
 
-        var authToken = new UsernamePasswordAuthenticationToken(
-                dto.username(), dto.password());
-
+        var authToken = new UsernamePasswordAuthenticationToken(dto.username(), dto.password());
         var auth = authenticationManager.authenticate(authToken);
 
         var user = (User) auth.getPrincipal();
 
         var token = tokenService.generateToken(user);
 
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok(new LoginResponseDTO(token));
     }
 }
