@@ -8,7 +8,6 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,14 +77,5 @@ public class ResidenceService {
 	}
 
 	private void validateResidence(Residence residence) {
-		if (residence.getTitle() == null || residence.getTitle().isBlank()) {
-			throw new IllegalArgumentException("Title cannot be null or blank");
-		}
-		if (residence.getLocation() == null || residence.getLocation().isBlank()) {
-			throw new IllegalArgumentException("Location cannot be null or blank");
-		}
-		if (residence.getPrice() == null || residence.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
-			throw new IllegalArgumentException("Price must be greater than zero");
-		}
 	}
 }

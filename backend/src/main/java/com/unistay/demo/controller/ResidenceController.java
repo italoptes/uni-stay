@@ -6,6 +6,7 @@ import com.unistay.demo.entity.Residence;
 import com.unistay.demo.entity.User;
 import com.unistay.demo.openapi.ResidenceControllerOpenApi;
 import com.unistay.demo.service.ResidenceService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class ResidenceController implements ResidenceControllerOpenApi {
     }
 
     @PostMapping
-    public ResponseEntity<ResidenceResponseDTO> create(@RequestBody ResidenceRequestDTO dto) {
+    public ResponseEntity<ResidenceResponseDTO> create(@RequestBody @Valid ResidenceRequestDTO dto) {
 
         var auth = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) auth.getPrincipal();
@@ -89,7 +90,7 @@ public class ResidenceController implements ResidenceControllerOpenApi {
 
     @PutMapping("/{id}")
     public ResponseEntity<ResidenceResponseDTO> update(@PathVariable Long id,
-                                                       @RequestBody ResidenceRequestDTO dto) {
+                                                       @RequestBody @Valid ResidenceRequestDTO dto) {
 
         var auth = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) auth.getPrincipal();

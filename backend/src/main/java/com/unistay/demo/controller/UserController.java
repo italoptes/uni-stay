@@ -5,6 +5,7 @@ import com.unistay.demo.dto.UserResponseDTO;
 import com.unistay.demo.entity.User;
 import com.unistay.demo.openapi.UserControllerOpenApi;
 import com.unistay.demo.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,7 @@ public class UserController implements UserControllerOpenApi {
 	}
 
 	@PostMapping
-	public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserRequestDTO dto) {
+	public ResponseEntity<UserResponseDTO> createUser(@RequestBody @Valid UserRequestDTO dto) {
 
 		User user = new User();
 		user.setUsername(dto.username());

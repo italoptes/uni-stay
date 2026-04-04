@@ -4,7 +4,6 @@ import com.unistay.demo.dto.UserRequestDTO;
 import com.unistay.demo.dto.UserResponseDTO;
 import com.unistay.demo.entity.User;
 import com.unistay.demo.repository.UserRepository;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,14 +22,6 @@ public class UserService {
 	}
 
 	public User createUser(User user) {
-		if (user.getUsername() == null || user.getUsername().isBlank()) {
-			throw new IllegalArgumentException("Username cannot be null or blank");
-		}
-
-		if (user.getPassword() == null || user.getPassword().isBlank()) {
-			throw new IllegalArgumentException("Password cannot be null or blank");
-		}
-
 		if (userRepository.existsByUsername(user.getUsername())) {
 			throw new IllegalArgumentException("Username already exists");
 		}
