@@ -315,6 +315,13 @@ Erros de validação de payload retornam HTTP `400` com estrutura compatível pa
 - validação com resposta estruturada por campo
 - melhor feedback visual de erro e sucesso no frontend
 - página pessoal para gerenciamento das residências do usuário
+- redesign completo das páginas LandingPage, Home, ResidenceDetails e MyResidences
+- skeleton loading nas listagens de residências
+- filtro client-side por texto (título e localização) e por faixa de preço
+- página 404 para rotas inexistentes
+- interceptor de resposta Axios para redirecionamento automático em erros 401/403
+- validação no frontend nos formulários de criação e edição de residências
+- navbar com `sticky top-0` e `z-index` corrigido
 
 ---
 
@@ -328,6 +335,11 @@ Erros de validação de payload retornam HTTP `400` com estrutura compatível pa
 | Login integrado com backend | ✅ Concluído |
 | Separação entre rotas públicas e protegidas | ✅ Concluído |
 | CRUD de residências com área pessoal do usuário | ✅ Concluído |
+| Redesign de UI | ✅ Concluído |
+| Filtros client-side por texto e preço | ✅ Concluído |
+| Validação no frontend | ✅ Concluído |
+| Página 404 | ✅ Concluído |
+| Interceptor Axios 401/403 | ✅ Concluído |
 | Deploy (Docker + Cloud) | 📋 Planejado |
 
 ---

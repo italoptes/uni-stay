@@ -73,7 +73,7 @@ Para manter o projeto simples e executável em 1 semana, NÃO será implementado
 Arquitetura em camadas:
 
 * **Controller** → entrada das requisições HTTP (sem lógica de negócio)
-* **Service** → regras de negócio 
+* **Service** → regras de negócio
 * **Repository** → acesso ao banco de dados
 * **Entity** → entidades JPA
 * **DTO** → entrada/saída da API (records)
@@ -337,5 +337,12 @@ O desenvolvimento segue ciclos curtos:
 * página `"/my-residences"` para gerenciamento do usuário
 * validação estruturada com erros por campo
 * feedback visual de sucesso e erro no frontend
+* redesign completo das páginas LandingPage, Home, ResidenceDetails e MyResidences
+* skeleton loading nas listagens de residências
+* filtro client-side por texto (título e localização) e por faixa de preço
+* página 404 para rotas inexistentes
+* interceptor de resposta Axios para redirecionamento automático em erros 401/403
+* validação no frontend nos formulários de criação e edição de residências
+* navbar com `sticky top-0` e `z-index` corrigido
 
 ---
