@@ -58,6 +58,29 @@ function EditResidence() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setErrorMessage('');
+    const validationErrors = {};
+    if (!formData.title.trim()) {
+      validationErrors.title = 'Título é obrigatório.';
+    }
+    if (!formData.description.trim()) {
+      validationErrors.description = 'Descrição é obrigatória.';
+    }
+    if (!formData.location.trim()) {
+      validationErrors.location = 'Localização é obrigatória.';
+    }
+    const priceValue = Number(formData.price);
+    if (!priceValue || priceValue <= 0) {
+      validationErrors.price = 'Preço deve ser maior que zero.';
+    }
+    if (!formData.contactPhone.trim()) {
+      validationErrors.contactPhone = 'Telefone para contato é obrigatório.';
+    } else if (formData.contactPhone.trim().length < 8) {
+      validationErrors.contactPhone = 'Telefone deve ter no mínimo 8 caracteres.';
+    }
+    if (Object.keys(validationErrors).length > 0) {
+      setFieldErrors(validationErrors);
+      return;
+    }
     setFieldErrors({});
     setIsSubmitting(true);
 
@@ -125,7 +148,9 @@ function EditResidence() {
               placeholder="Digite o título da residência"
               required
             />
-            {fieldErrors.title ? <p className="text-sm text-red-500">{fieldErrors.title}</p> : null}
+            {fieldErrors.title ? (
+              <p className="mt-1 text-xs text-red-500">{fieldErrors.title}</p>
+            ) : null}
           </div>
 
           <div className="space-y-2">
@@ -142,7 +167,7 @@ function EditResidence() {
               required
             />
             {fieldErrors.description ? (
-              <p className="text-sm text-red-500">{fieldErrors.description}</p>
+              <p className="mt-1 text-xs text-red-500">{fieldErrors.description}</p>
             ) : null}
           </div>
 
@@ -161,7 +186,7 @@ function EditResidence() {
               required
             />
             {fieldErrors.location ? (
-              <p className="text-sm text-red-500">{fieldErrors.location}</p>
+              <p className="mt-1 text-xs text-red-500">{fieldErrors.location}</p>
             ) : null}
           </div>
 
@@ -183,7 +208,7 @@ function EditResidence() {
                 required
               />
               {fieldErrors.price ? (
-                <p className="text-sm text-red-500">{fieldErrors.price}</p>
+                <p className="mt-1 text-xs text-red-500">{fieldErrors.price}</p>
               ) : null}
             </div>
 
@@ -202,7 +227,7 @@ function EditResidence() {
                 required
               />
               {fieldErrors.contactPhone ? (
-                <p className="text-sm text-red-500">{fieldErrors.contactPhone}</p>
+                <p className="mt-1 text-xs text-red-500">{fieldErrors.contactPhone}</p>
               ) : null}
             </div>
           </div>
