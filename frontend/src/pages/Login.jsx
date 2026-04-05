@@ -46,7 +46,7 @@ function Login() {
 
     try {
       await login(formData.username, formData.password);
-      navigate('/');
+      navigate('/residences');
     } catch (error) {
       const errors = error.response?.data?.errors;
       const status = error.response?.status;

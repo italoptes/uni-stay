@@ -9,7 +9,6 @@ function ResidenceDetails() {
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
-
   useEffect(() => {
     const fetchResidence = async () => {
       try {
@@ -27,78 +26,134 @@ function ResidenceDetails() {
 
   if (loading) {
     return (
-      <section className="space-y-4">
-        <h1 className="text-3xl font-semibold tracking-tight text-slate-950">
-          Detalhes da residência
-        </h1>
-        <p className="text-sm font-medium text-slate-500">Carregando residência...</p>
-      </section>
+        <section className="mx-auto max-w-2xl px-4 py-10 space-y-4 animate-pulse">
+          <div className="h-5 w-24 rounded bg-gray-100" />
+          <div className="h-7 w-2/3 rounded bg-gray-100" />
+          <div className="h-4 w-full rounded bg-gray-100 mt-2" />
+          <div className="h-4 w-4/5 rounded bg-gray-100" />
+          <div className="rounded-xl border border-gray-200 bg-white p-6 mt-4 space-y-5">
+            {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="space-y-1.5">
+                  <div className="h-3 w-24 rounded bg-gray-100" />
+                  <div className="h-4 w-40 rounded bg-gray-100" />
+                </div>
+            ))}
+          </div>
+        </section>
     );
   }
 
   if (errorMessage) {
     return (
-      <section className="space-y-4">
-        <h1 className="text-3xl font-semibold tracking-tight text-slate-950">
-          Detalhes da residência
-        </h1>
-        <p className="text-sm font-medium text-red-600">{errorMessage}</p>
-      </section>
+        <section className="mx-auto max-w-2xl px-4 py-10">
+          <button
+              onClick={() => navigate('/')}
+              className="mb-6 flex items-center gap-1.5 text-sm text-gray-500 transition hover:text-gray-800"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+            </svg>
+            Voltar
+          </button>
+          <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-5">
+            <svg className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            </svg>
+            <p className="text-sm text-red-600">{errorMessage}</p>
+          </div>
+        </section>
     );
   }
 
   if (!residence) {
     return (
-      <section className="space-y-4">
-        <h1 className="text-3xl font-semibold tracking-tight text-slate-950">
-          Detalhes da residência
-        </h1>
-        <p className="text-sm font-medium text-slate-500">Residência não encontrada.</p>
-      </section>
+        <section className="mx-auto max-w-2xl px-4 py-10">
+          <button
+              onClick={() => navigate('/')}
+              className="mb-6 flex items-center gap-1.5 text-sm text-gray-500 transition hover:text-gray-800"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+            </svg>
+            Voltar
+          </button>
+          <p className="text-sm text-gray-500">Residência não encontrada.</p>
+        </section>
     );
   }
 
   return (
-    <section className="space-y-6">
-      <div className="space-y-3">
-        <h1 className="text-3xl font-semibold tracking-tight text-slate-950">
-          {residence.title}
-        </h1>
-        <p className="text-base leading-7 text-slate-600">
-          {residence.description || 'Sem descrição informada.'}
-        </p>
-      </div>
+      <section className="mx-auto max-w-2xl px-4 py-10">
 
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <dl className="space-y-4">
-          <div>
-            <dt className="text-sm font-medium text-slate-500">Localização</dt>
-            <dd className="mt-1 text-base text-slate-900">{residence.location}</dd>
-          </div>
-          <div>
-            <dt className="text-sm font-medium text-slate-500">Preço</dt>
-            <dd className="mt-1 text-base text-slate-900">
-              {typeof residence.price === 'number'
-                ? `R$ ${residence.price.toFixed(2)}`
-                : residence.price}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-sm font-medium text-slate-500">Telefone para contato</dt>
-            <dd className="mt-1 text-base text-slate-900">{residence.contactPhone}</dd>
-          </div>
-        </dl>
-      </div>
-
-      <div className="mt-4 flex justify-center">
+        {/* Voltar */}
         <button
             onClick={() => navigate('/')}
-            className="rounded-lg border border-gray-300 px-6 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100"
+            className="mb-6 flex items-center gap-1.5 text-sm text-gray-500 transition hover:text-gray-800"
         >
-          Voltar
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          </svg>
+          Voltar para listagem
         </button>
-      </div>
-    </section>
+
+        {/* Cabeçalho */}
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-2">
+            <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+            </svg>
+            <span className="text-xs text-gray-400">{residence.location}</span>
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900 leading-snug">
+            {residence.title}
+          </h1>
+          {residence.description && (
+              <p className="mt-3 text-sm leading-relaxed text-gray-500">
+                {residence.description}
+              </p>
+          )}
+        </div>
+
+        {/* Card de detalhes */}
+        <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+
+          {/* Preço em destaque */}
+          <div className="flex items-baseline gap-1 border-b border-gray-100 bg-green-50 px-6 py-4">
+          <span className="text-2xl font-bold text-green-600">
+            {typeof residence.price === 'number'
+                ? `R$ ${residence.price.toFixed(2)}`
+                : residence.price}
+          </span>
+            <span className="text-sm text-green-500">/mês</span>
+          </div>
+
+          {/* Dados */}
+          <dl className="divide-y divide-gray-100">
+            <div className="flex items-start gap-3 px-6 py-4">
+              <svg className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+              </svg>
+              <div>
+                <dt className="text-xs font-medium text-gray-400 mb-0.5">Localização</dt>
+                <dd className="text-sm text-gray-800">{residence.location}</dd>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 px-6 py-4">
+              <svg className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+              </svg>
+              <div>
+                <dt className="text-xs font-medium text-gray-400 mb-0.5">Telefone para contato</dt>
+                <dd className="text-sm text-gray-800">{residence.contactPhone}</dd>
+              </div>
+            </div>
+          </dl>
+        </div>
+
+      </section>
   );
 }
 

@@ -3,6 +3,7 @@ import Layout from '../components/Layout';
 import CreateResidence from '../pages/CreateResidence';
 import EditResidence from '../pages/EditResidence';
 import Home from '../pages/Home';
+import LandingPage from '../pages/LandingPage';
 import Login from '../pages/Login';
 import MyResidences from '../pages/MyResidences';
 import ResidenceDetails from '../pages/ResidenceDetails';
@@ -13,7 +14,8 @@ function AppRoutes() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/residences" element={<Home />} />
         <Route path="/residences/:id" element={<ResidenceDetails />} />
         <Route
           path="/residences/new"

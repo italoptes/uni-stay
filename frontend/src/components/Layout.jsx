@@ -48,7 +48,7 @@ function Layout() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800">
-      <header className="border-b border-gray-200 bg-white">
+      <header className="border-b border-gray-200 bg-white sticky top-0 z-50">
         <div className="mx-auto flex max-w-md items-center justify-between gap-4 px-4 py-3">
 
           <NavLink to="/" className="flex items-center gap-2">
@@ -80,7 +80,7 @@ function Layout() {
                 <div className="absolute right-0 top-full mt-2 w-40 rounded-lg border border-gray-200 bg-white py-1 shadow-md">                  <button
                   onClick={() => {
                     setOpen(false);
-                    navigate('/');
+                    navigate('/residences');
                   }}
                   className="w-full cursor-pointer px-3 py-2 text-left text-sm hover:bg-gray-100"
                 >
@@ -110,6 +110,12 @@ function Layout() {
           )}
           {!isAuthenticated && (
             <div className="flex items-center gap-2">
+              <NavLink
+                to="/residences"
+                className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
+              >
+                Ver residências
+              </NavLink>
               <NavLink
                 to="/login"
                 className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
