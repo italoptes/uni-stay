@@ -6,6 +6,7 @@ import Home from '../pages/Home';
 import LandingPage from '../pages/LandingPage';
 import Login from '../pages/Login';
 import MyResidences from '../pages/MyResidences';
+import NotFound from '../pages/NotFound';
 import ResidenceDetails from '../pages/ResidenceDetails';
 import Register from '../pages/Register';
 import ProtectedRoute from './ProtectedRoute';
@@ -43,6 +44,7 @@ function AppRoutes() {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   );
