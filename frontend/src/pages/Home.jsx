@@ -53,6 +53,8 @@ function Home() {
   const [residences, setResidences] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [priceFilter, setPriceFilter] = useState('any');
 
   useEffect(() => {
     const fetchResidences = async () => {
@@ -69,6 +71,30 @@ function Home() {
     fetchResidences();
   }, []);
 
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+  const filteredResidences = residences.filter((residence) => {
+    const title = residence.title?.toLowerCase() ?? '';
+    const location = residence.location?.toLowerCase() ?? '';
+
+    if (normalizedSearch && !title.includes(normalizedSearch) && !location.includes(normalizedSearch)) {
+      return false;
+    }
+
+    if (priceFilter !== 'any') {
+      const priceValue =
+          typeof residence.price === 'number'
+              ? residence.price
+              : Number(String(residence.price).replace(/[^\d.-]/g, ''));
+      if (Number.isNaN(priceValue)) return false;
+      if (priceFilter === 'upTo250') return priceValue <= 250;
+      if (priceFilter === '250to500') return priceValue > 250 && priceValue <= 500;
+      if (priceFilter === '500to700') return priceValue > 500 && priceValue <= 700;
+      if (priceFilter === 'above700') return priceValue > 700;
+    }
+
+    return true;
+  });
+
   return (
       <section className="mx-auto max-w-5xl px-4 py-10 space-y-8">
 
@@ -82,12 +108,50 @@ function Home() {
               Encontre a moradia ideal para sua rotina acadêmica.
             </p>
           </div>
-          {!loading && !error && residences.length > 0 && (
+          {!loading && !error && filteredResidences.length > 0 && (
               <span className="text-xs text-gray-400 font-medium self-start sm:self-auto">
-            {residences.length} {residences.length === 1 ? 'resultado' : 'resultados'}
+            {filteredResidences.length}{' '}
+                {filteredResidences.length === 1 ? 'resultado' : 'resultados'}
           </span>
           )}
         </div>
+        {!loading && !error && residences.length > 0 && (
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="relative flex-1">
+              <svg
+                className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1.8}
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Buscar por título ou localização"
+                className="w-full rounded-lg border border-gray-200 py-2 pl-9 pr-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+            </div>
+            <select
+              value={priceFilter}
+              onChange={(event) => setPriceFilter(event.target.value)}
+              className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500"
+            >
+              <option value="any">Qualquer preço</option>
+              <option value="upTo250">Até R$ 250</option>
+              <option value="250to500">R$ 250 a R$ 500</option>
+              <option value="500to700">R$ 500 a R$ 700</option>
+              <option value="above700">Acima de R$ 700</option>
+            </select>
+          </div>
+        )}
 
         {/* Loading */}
         {loading && (
@@ -109,7 +173,7 @@ function Home() {
         )}
 
         {/* Vazio */}
-        {!loading && !error && residences.length === 0 && (
+        {!loading && !error && filteredResidences.length === 0 && (
             <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-white py-16 text-center">
               <svg className="mb-3 w-8 h-8 text-gray-300" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75" />
@@ -120,9 +184,9 @@ function Home() {
         )}
 
         {/* Grid de cards */}
-        {!loading && !error && residences.length > 0 && (
+        {!loading && !error && filteredResidences.length > 0 && (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {residences.map((residence) => (
+              {filteredResidences.map((residence) => (
                   <ResidenceCard key={residence.id} residence={residence} />
               ))}
             </div>
