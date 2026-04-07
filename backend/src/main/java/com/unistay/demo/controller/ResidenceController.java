@@ -37,6 +37,10 @@ public class ResidenceController implements ResidenceControllerOpenApi {
         residence.setPrice(dto.price());
         residence.setContactPhone(dto.contactPhone());
         residence.setImageUrl(dto.imageUrl());
+        residence.setType(dto.type());
+        residence.setCapacity(dto.capacity());
+        residence.setBathrooms(dto.bathrooms());
+        residence.setCurrentResidents(dto.currentResidents());
 
         Residence saved = residenceService.createResidence(residence, user.getId());
 
@@ -88,6 +92,10 @@ public class ResidenceController implements ResidenceControllerOpenApi {
         updated.setPrice(dto.price());
         updated.setContactPhone(dto.contactPhone());
         updated.setImageUrl(dto.imageUrl());
+        updated.setType(dto.type());
+        updated.setCapacity(dto.capacity());
+        updated.setBathrooms(dto.bathrooms());
+        updated.setCurrentResidents(dto.currentResidents());
 
         Residence saved = residenceService.updateResidence(id, updated, user.getId());
 

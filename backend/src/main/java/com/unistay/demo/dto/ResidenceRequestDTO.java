@@ -1,5 +1,6 @@
 package com.unistay.demo.dto;
 
+import com.unistay.demo.entity.ResidenceType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -28,6 +29,14 @@ public record ResidenceRequestDTO(
         String contactPhone,
 
         @Size(max = 500)
-        String imageUrl
+        String imageUrl,
+
+        ResidenceType type,
+
+        Integer capacity,
+
+        Integer bathrooms,
+
+        Integer currentResidents
 ) {
 }

@@ -1,6 +1,7 @@
 package com.unistay.demo.dto;
 
 import com.unistay.demo.entity.Residence;
+import com.unistay.demo.entity.ResidenceType;
 
 import java.math.BigDecimal;
 
@@ -12,6 +13,10 @@ public record ResidenceResponseDTO(
         BigDecimal price,
         String contactPhone,
         String imageUrl,
+        ResidenceType type,
+        Integer capacity,
+        Integer bathrooms,
+        Integer currentResidents,
         Long userId
 ) {
     public static ResidenceResponseDTO fromEntity(Residence residence) {
@@ -23,6 +28,10 @@ public record ResidenceResponseDTO(
                 residence.getPrice(),
                 residence.getContactPhone(),
                 residence.getImageUrl(),
+                residence.getType(),
+                residence.getCapacity(),
+                residence.getBathrooms(),
+                residence.getCurrentResidents(),
                 residence.getUser().getId()
         );
     }

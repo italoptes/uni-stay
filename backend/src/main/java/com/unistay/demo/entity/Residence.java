@@ -41,6 +41,19 @@ public class Residence {
 	@Column(name = "image_url")
 	private String imageUrl;
 
+	@Enumerated(EnumType.STRING)
+	@Column(name = "type", length = 50)
+	private ResidenceType type;
+
+	@Column(name = "capacity")
+	private Integer capacity;
+
+	@Column(name = "bathrooms")
+	private Integer bathrooms;
+
+	@Column(name = "current_residents")
+	private Integer currentResidents;
+
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(
 			name = "user_id",

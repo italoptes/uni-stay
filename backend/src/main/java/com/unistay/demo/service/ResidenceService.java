@@ -82,6 +82,10 @@ public class ResidenceService {
 		existing.setPrice(updated.getPrice());
 		existing.setContactPhone(updated.getContactPhone());
 		existing.setImageUrl(updated.getImageUrl());
+		existing.setType(updated.getType());
+		existing.setCapacity(updated.getCapacity());
+		existing.setBathrooms(updated.getBathrooms());
+		existing.setCurrentResidents(updated.getCurrentResidents());
 
 		return residenceRepository.save(existing);
 	}
