@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+
+  postgres:
+    image: postgres:15
+    container_name: unistay-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: unistay
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: unistay-backend
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/unistay
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 123
+      JWT_SECRET: uma_chave_super_segura
+      PORT: 8080
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: ./frontend
+    container_name: unistay-frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+
+volumes:
+  postgres_data:

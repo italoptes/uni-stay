@@ -34,6 +34,8 @@ frontend/node_modules/
 dist/
 frontend/dist/
 .env
+dist/
+/dist
 
 ### VS Code ###
 .vscode/
