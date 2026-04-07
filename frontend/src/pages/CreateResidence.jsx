@@ -3,14 +3,24 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { uploadImage } from '../utils/uploadImage';
 
+const residenceTypeOptions = [
+  { value: 'HOUSE', label: 'Casa inteira' },
+  { value: 'ROOM', label: 'Quarto' },
+  { value: 'SHARED_SPOT', label: 'Vaga compartilhada' },
+];
+
 function CreateResidence() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     location: '',
+    type: '',
     price: '',
     contactPhone: '',
+    capacity: '',
+    bathrooms: '',
+    currentResidents: '',
     imageUrl: null,
   });
   const [fieldErrors, setFieldErrors] = useState({});
@@ -117,7 +127,11 @@ function CreateResidence() {
 
       await api.post('/residences', {
         ...formData,
+        type: formData.type || null,
         price: Number(formData.price),
+        capacity: formData.capacity === '' ? null : Number(formData.capacity),
+        bathrooms: formData.bathrooms === '' ? null : Number(formData.bathrooms),
+        currentResidents: formData.currentResidents === '' ? null : Number(formData.currentResidents),
         imageUrl: imageUrl ?? null,
       });
       localStorage.setItem('successMessage', 'Residência criada com sucesso!');
@@ -215,6 +229,88 @@ function CreateResidence() {
             {fieldErrors.location ? (
               <p className="mt-1 text-xs text-red-500">{fieldErrors.location}</p>
             ) : null}
+          </div>
+
+          <div className="space-y-2">
+            <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="type">
+              Tipo
+            </label>
+            <select
+              id="type"
+              name="type"
+              value={formData.type}
+              onChange={handleChange}
+              className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500"
+            >
+              <option value="">Selecione o tipo</option>
+              {residenceTypeOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            {fieldErrors.type ? (
+              <p className="mt-1 text-xs text-red-500">{fieldErrors.type}</p>
+            ) : null}
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="capacity">
+                Capacidade (pessoas)
+              </label>
+              <input
+                id="capacity"
+                name="capacity"
+                type="number"
+                min="1"
+                max="20"
+                value={formData.capacity}
+                onChange={handleChange}
+                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+              {fieldErrors.capacity ? (
+                <p className="mt-1 text-xs text-red-500">{fieldErrors.capacity}</p>
+              ) : null}
+            </div>
+
+            <div className="space-y-2">
+              <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="bathrooms">
+                Banheiros
+              </label>
+              <input
+                id="bathrooms"
+                name="bathrooms"
+                type="number"
+                min="1"
+                max="10"
+                value={formData.bathrooms}
+                onChange={handleChange}
+                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+              {fieldErrors.bathrooms ? (
+                <p className="mt-1 text-xs text-red-500">{fieldErrors.bathrooms}</p>
+              ) : null}
+            </div>
+
+            <div className="space-y-2">
+              <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="currentResidents">
+                Moradores atuais
+              </label>
+              <input
+                id="currentResidents"
+                name="currentResidents"
+                type="number"
+                min="0"
+                max="20"
+                value={formData.currentResidents}
+                onChange={handleChange}
+                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+              {fieldErrors.currentResidents ? (
+                <p className="mt-1 text-xs text-red-500">{fieldErrors.currentResidents}</p>
+              ) : null}
+            </div>
           </div>
 
           <div className="grid gap-4">

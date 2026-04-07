@@ -1,0 +1,8 @@
+export function getTypeLabel(type) {
+  const labels = {
+    HOUSE: 'Casa inteira',
+    ROOM: 'Quarto',
+    SHARED_SPOT: 'Vaga compartilhada',
+  };
+  return labels[type] ?? null;
+}
