@@ -11,6 +11,7 @@
 [![React](https://img.shields.io/badge/React-Vite-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com)
 
 <br/>
 
@@ -24,7 +25,7 @@
 
 ## 📌 Sobre o Projeto
 
-O **UniStay** é uma plataforma full-stack que conecta estudantes a opções de moradia de forma segura e organizada.A aplicação foi construída com foco em boas práticas de engenharia de software, incluindo separação clara de responsabilidades, arquitetura em camadas e autenticação moderna via JWT.
+O **UniStay** é uma plataforma full-stack que conecta estudantes a opções de moradia de forma segura e organizada. A aplicação foi construída com foco em boas práticas de engenharia de software, incluindo separação clara de responsabilidades, arquitetura em camadas e autenticação moderna via JWT.
 
 Com o UniStay, o usuário pode:
 
@@ -93,6 +94,15 @@ Com o UniStay, o usuário pode:
       <td>React Router</td>
       <td>Navegação entre páginas</td>
     </tr>
+    <tr>
+      <td rowspan="2"><strong>🐳 Infra</strong></td>
+      <td>Docker + Docker Compose</td>
+      <td>Containerização e orquestração</td>
+    </tr>
+    <tr>
+      <td>Nginx</td>
+      <td>Servidor do frontend em produção</td>
+    </tr>
   </tbody>
 </table>
 
@@ -145,11 +155,6 @@ pages → components → services → context → routes
 - `GET /residences/{id}`
 - Página inicial `"/"`
 
-Sem autenticação, o usuário pode:
-
-- visualizar todas as residências
-- acessar os detalhes de cada residência
-
 ### Acesso Autenticado
 
 Usuários autenticados podem:
@@ -158,32 +163,120 @@ Usuários autenticados podem:
 - editar e remover apenas suas próprias residências
 - acessar a página pessoal `"/my-residences"`
 
-> A autorização de edição e remoção continua sendo validada no backend com base no usuário autenticado via JWT.
+> A autorização de edição e remoção é validada no backend com base no usuário autenticado via JWT.
 
 ---
 
 ## 🖼️ Upload de Imagens
 
-- O upload é feito diretamente do frontend para o Cloudinary usando um upload preset unsigned
-- O backend recebe apenas a URL final da imagem, sem contato direto com a API do Cloudinary
+- Upload feito diretamente do frontend para o Cloudinary usando upload preset unsigned
+- O backend recebe apenas a URL final da imagem
 - Campo `imageUrl` é opcional em todas as operações de residência
-- Formatos aceitos: jpg, png, webp
-- Tamanho máximo: 5MB (validado no frontend)
-- As imagens ficam armazenadas na pasta `unistay/residences` no Cloudinary
+- Formatos aceitos: jpg, png, webp — tamanho máximo: 5MB
+- Imagens armazenadas na pasta `unistay/residences` no Cloudinary
+
+---
+
+## 🐳 Docker
+
+O projeto está totalmente containerizado com **Docker Compose**, permitindo subir toda a stack com um único comando.
+
+### Estrutura de containers
+
+| Container | Imagem | Porta |
+|-----------|--------|-------|
+| `unistay-postgres` | postgres:15 | 5432 |
+| `unistay-backend` | eclipse-temurin:21-jdk | 8080 |
+| `unistay-frontend` | nginx:alpine | 80 |
+
+### Arquivos de configuração
+
+```
+/backend
+  Dockerfile          # Build do .jar com Maven Wrapper
+/frontend
+  Dockerfile          # Build do React + serve com Nginx
+docker-compose.yml    # Orquestração dos 3 containers
+.env                  # Variáveis de ambiente (não versionar)
+```
+
+### Variáveis de ambiente (`.env`)
+
+```env
+SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/unistay
+SPRING_DATASOURCE_USERNAME=postgres
+SPRING_DATASOURCE_PASSWORD=sua_senha
+
+JWT_SECRET=sua_chave_super_segura
+```
+
+> ⚠️ O host do banco dentro do Docker é `postgres` (nome do container), não `localhost`.
+
+### `application.properties` (configuração com variáveis de ambiente)
+
+```properties
+server.port=${PORT:8080}
+
+spring.datasource.url=${SPRING_DATASOURCE_URL}
+spring.datasource.username=${SPRING_DATASOURCE_USERNAME}
+spring.datasource.password=${SPRING_DATASOURCE_PASSWORD}
+
+spring.jpa.hibernate.ddl-auto=update
+
+api.security.secret=${JWT_SECRET}
+```
+
+### CORS
+
+O backend está configurado para aceitar requisições de origens diferentes. Em `SecurityConfig.java`, as origens permitidas incluem tanto o ambiente local quanto o ambiente de produção:
+
+```java
+configuration.setAllowedOrigins(List.of(
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "https://seudominio.com"  // adicionar ao fazer deploy
+));
+```
 
 ---
 
 ## ⚙️ Como Executar
 
-### Pré-requisitos
+### Com Docker (recomendado)
 
-- Java 21+
-- Node.js 18+
-- PostgreSQL rodando localmente
+**Pré-requisitos:** Docker e Docker Compose plugin instalados.
+
+```bash
+# Clonar o repositório
+git clone https://github.com/italoptes/unistay.git
+cd unistay
+
+# Subir toda a stack
+docker compose up -d --build
+```
+
+Acesse:
+- Frontend → **`http://localhost:3000`**
+- Backend / Swagger → **`http://localhost:8080/swagger-ui.html`**
+
+Para derrubar:
+```bash
+docker compose down
+```
+
+Para rebuildar após mudanças:
+```bash
+docker compose down
+docker compose up -d --build
+```
 
 ---
 
-### 📦 Backend
+### Sem Docker (desenvolvimento local)
+
+**Pré-requisitos:** Java 21+, Node.js 18+, PostgreSQL rodando localmente.
+
+#### 📦 Backend
 
 ```bash
 cd backend
@@ -192,11 +285,9 @@ mvn spring-boot:run
 
 Servidor disponível em: **`http://localhost:8080`**
 
-Documentação Swagger: **`http://localhost:8080/swagger-ui.html`**
+Swagger: **`http://localhost:8080/swagger-ui.html`**
 
----
-
-### 💻 Frontend
+#### 💻 Frontend
 
 ```bash
 cd frontend
@@ -206,6 +297,11 @@ npm run dev
 
 Aplicação disponível em: **`http://localhost:5173`**
 
+> Ao rodar sem Docker, ajuste o `.env` do frontend:
+> ```env
+> VITE_API_URL=http://localhost:8080
+> ```
+
 ---
 
 ## 📡 Endpoints Principais
@@ -214,15 +310,14 @@ Aplicação disponível em: **`http://localhost:5173`**
 |--------|------|-----------|
 | `POST` | `/auth/login` | Autenticação do usuário |
 | `POST` | `/users` | Cadastro de novo usuário |
-| `GET` | `/residences` | Listar residências (público) com parâmetros opcionais `page` (padrão: 0) e `size` (padrão: 9) |
+| `GET` | `/residences` | Listar residências (público) — suporta `?page=0&size=9` |
 | `GET` | `/residences/{id}` | Buscar residência por ID (público) |
 | `GET` | `/residences/me` | Listar residências do usuário autenticado |
 | `POST` | `/residences` | Criar nova residência (autenticado) |
 | `PUT` | `/residences/{id}` | Atualizar residência própria (autenticado) |
 | `DELETE` | `/residences/{id}` | Remover residência própria (autenticado) |
 
-> A resposta paginada de `GET /residences` segue o formato:
->
+> Resposta paginada de `GET /residences`:
 > ```json
 > {
 >   "content": [...],
@@ -231,66 +326,35 @@ Aplicação disponível em: **`http://localhost:5173`**
 >   "totalElements": 43
 > }
 > ```
->
-> O campo `imageUrl` é opcional em `POST /residences` e `PUT /residences/{id}`. A URL é gerada pelo Cloudinary no frontend antes de ser enviada ao backend.
->
-> Documentação completa disponível via Swagger em `http://localhost:8080/swagger-ui.html`
-
-### `GET /residences/me`
-
-Retorna apenas as residências pertencentes ao usuário autenticado.
-
-- utiliza o usuário resolvido a partir do JWT
-- não recebe `userId` na request
-- é usado pelo frontend na página `"/my-residences"`
 
 ---
 
 ## 🖥️ Comportamento do Frontend
 
 ### Home Page
-
-- pública
-- exibe todas as residências
-- comportamento somente leitura
-- contém navegação `Ver detalhes`
-- não exibe ações de editar ou excluir
+- pública, somente leitura
+- exibe todas as residências com navegação `Ver detalhes`
 
 ### Página de Detalhes
-
 - rota pública: `"/residences/:id"`
-- exibe as informações da residência selecionada
 
 ### Página `"/my-residences"`
-
 - protegida por autenticação
-- lista apenas as residências do usuário autenticado
+- lista residências do usuário autenticado
 - permite editar e excluir
 
 ### Navbar
 
-Sem autenticação:
-
-- `Início`
-- `Entrar`
-- `Cadastrar`
-
-Com autenticação:
-
-- `Início`
-- `Minhas residências`
-- `Nova residência`
-- `Sair`
+| Sem autenticação | Com autenticação |
+|-----------------|-----------------|
+| Início | Início |
+| Entrar | Minhas residências |
+| Cadastrar | Nova residência |
+| — | Sair |
 
 ---
 
 ## ✅ Validação e Tratamento de Erros
-
-O backend utiliza **Bean Validation** nos DTOs de entrada e tratamento centralizado com `GlobalExceptionHandler`.
-
-### Respostas estruturadas de validação
-
-Erros de validação de payload retornam HTTP `400` com estrutura compatível para consumo do frontend:
 
 ```json
 {
@@ -306,17 +370,17 @@ Erros de validação de payload retornam HTTP `400` com estrutura compatível pa
 }
 ```
 
-### Status importantes
-
-- `400` → erros de validação
-- `401` → falha de autenticação, como credenciais inválidas
-- `403` → falha de autorização, como tentativa de editar ou excluir residência de outro usuário
+| Status | Significado |
+|--------|-------------|
+| `400` | Erros de validação |
+| `401` | Falha de autenticação |
+| `403` | Falha de autorização |
 
 ---
 
-## 🔄 Fluxo Principal Atual
+## 🔄 Fluxo Principal
 
-1. Usuário acessa a plataforma sem precisar de login
+1. Usuário acessa a plataforma sem login
 2. Navega pela listagem pública de residências
 3. Visualiza os detalhes de uma residência
 4. Realiza cadastro ou login
@@ -326,24 +390,26 @@ Erros de validação de payload retornam HTTP `400` com estrutura compatível pa
 
 ## 🚀 Melhorias Recentes
 
-- paginação no endpoint `GET /residences` com parâmetros `page` e `size` (padrão: 9 por página, ordenado por mais recentes)
+- containerização completa com Docker Compose (backend + frontend + postgres)
+- `application.properties` externalizado com variáveis de ambiente
+- `server.port` dinâmico via `${PORT:8080}`
+- CORS configurado para múltiplas origens (local e produção)
+- `Dockerfile` do backend com Maven Wrapper (`./mvnw clean package`)
+- `Dockerfile` do frontend com build React + Nginx
+- volume persistente para o banco PostgreSQL
+- paginação no endpoint `GET /residences` com parâmetros `page` e `size`
 - controles de navegação entre páginas no frontend com reset automático ao filtrar
-- exibição do total de residências encontradas
-- upload de imagem de capa para residências via Cloudinary (upload direto do frontend, backend salva apenas a URL)
-- exibição da imagem nos cards da Home e na página de detalhes da residência
-- placeholder visual verde com ícone para residências sem imagem
-- validação de formato (jpg, png, webp) e tamanho máximo (5MB) no frontend
-- separação clara entre acesso público e ações privadas
+- upload de imagem via Cloudinary com preset unsigned
+- preview de imagem nos formulários de criação e edição
+- placeholder visual para residências sem imagem
 - endpoint `GET /residences/me` para gerenciamento por usuário autenticado
 - validação com resposta estruturada por campo
-- melhor feedback visual de erro e sucesso no frontend
-- página pessoal para gerenciamento das residências do usuário
 - redesign completo das páginas LandingPage, Home, ResidenceDetails e MyResidences
 - skeleton loading nas listagens de residências
 - filtro client-side por texto (título e localização) e por faixa de preço
 - página 404 para rotas inexistentes
-- interceptor de resposta Axios para redirecionamento automático em erros 401/403
-- validação no frontend nos formulários de criação e edição de residências
+- interceptor Axios para redirecionamento automático em erros 401/403
+- validação no frontend nos formulários de criação e edição
 - navbar com `sticky top-0` e `z-index` corrigido
 
 ---
@@ -357,7 +423,7 @@ Erros de validação de payload retornam HTTP `400` com estrutura compatível pa
 | Frontend estruturado com React + Tailwind | ✅ Concluído |
 | Login integrado com backend | ✅ Concluído |
 | Separação entre rotas públicas e protegidas | ✅ Concluído |
-| CRUD de residências com área pessoal do usuário | ✅ Concluído |
+| CRUD de residências com área pessoal | ✅ Concluído |
 | Redesign de UI | ✅ Concluído |
 | Filtros client-side por texto e preço | ✅ Concluído |
 | Validação no frontend | ✅ Concluído |
@@ -365,25 +431,16 @@ Erros de validação de payload retornam HTTP `400` com estrutura compatível pa
 | Interceptor Axios 401/403 | ✅ Concluído |
 | Upload de imagem via Cloudinary | ✅ Concluído |
 | Paginação no backend com Pageable | ✅ Concluído |
-| Deploy (Docker + Cloud) | 📋 Planejado |
+| Docker + Docker Compose | ✅ Concluído |
+| Deploy em VM + Cloudflare | 📋 Em andamento |
 
 ---
 
 ## 🎯 Objetivos do Projeto
 
-O UniStay foi desenvolvido com múltiplos propósitos:
-
 - 💼 **Portfólio profissional** — demonstração prática de habilidades full-stack
 - 🧪 **Boas práticas** — arquitetura limpa e separação de responsabilidades
-- 🌍 **Solução real** — plataforma pensada para um problema concreto de estudantes universitários
-
----
-
-## 📋 Próximos Passos
-
-- [x] Deploy com Docker + Cloud
-- [ ] Melhorias iniciais de UX/UI
-- [ ] Sistema de favoritos ou contato direto entre usuários
+- 🌍 **Solução real** — plataforma pensada para um problema concreto de estudantes
 
 ---
 
