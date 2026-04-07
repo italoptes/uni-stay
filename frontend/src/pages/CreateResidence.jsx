@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import { uploadImage } from '../utils/uploadImage';
 
 function CreateResidence() {
   const navigate = useNavigate();
@@ -14,6 +15,23 @@ function CreateResidence() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState('');
+  const [uploadError, setUploadError] = useState('');
+
+  useEffect(() => {
+    if (!selectedImage) {
+      setPreviewUrl('');
+      return undefined;
+    }
+
+    const nextPreviewUrl = URL.createObjectURL(selectedImage);
+    setPreviewUrl(nextPreviewUrl);
+
+    return () => {
+      URL.revokeObjectURL(nextPreviewUrl);
+    };
+  }, [selectedImage]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -30,9 +48,18 @@ function CreateResidence() {
     setErrorMessage('');
   };
 
+  const handleImageChange = (event) => {
+    const file = event.target.files?.[0] ?? null;
+
+    setSelectedImage(file);
+    setUploadError('');
+    setErrorMessage('');
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setErrorMessage('');
+    setUploadError('');
     const validationErrors = {};
     if (!formData.title.trim()) {
       validationErrors.title = 'Título é obrigatório.';
@@ -60,9 +87,22 @@ function CreateResidence() {
     setIsSubmitting(true);
 
     try {
+      let imageUrl = null;
+
+      if (selectedImage) {
+        try {
+          imageUrl = await uploadImage(selectedImage);
+        }  catch (error) {
+          setUploadError(error.message || 'Erro ao enviar imagem.');
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
       await api.post('/residences', {
         ...formData,
         price: Number(formData.price),
+        imageUrl,
       });
       localStorage.setItem('successMessage', 'Residência criada com sucesso!');
       navigate('/my-residences');
@@ -96,6 +136,12 @@ function CreateResidence() {
           {errorMessage ? (
             <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
               {errorMessage}
+            </p>
+          ) : null}
+
+          {uploadError ? (
+            <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {uploadError}
             </p>
           ) : null}
 
@@ -197,12 +243,40 @@ function CreateResidence() {
             </div>
           </div>
 
+          <div className="space-y-3">
+            <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="image">
+              Imagem de capa
+            </label>
+            <input
+              id="image"
+              name="image"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-800 file:mr-3 file:rounded-xl file:border-0 file:bg-green-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+            <p className="text-xs text-gray-400">Opcional. Envie JPG, PNG ou WEBP com até 5MB.</p>
+            {previewUrl ? (
+              <img
+                src={previewUrl}
+                alt="Preview da imagem selecionada"
+                className="h-48 w-full rounded-xl border border-gray-200 object-cover shadow-sm"
+              />
+            ) : (
+              <div className="flex h-48 items-center justify-center rounded-xl border border-dashed border-gray-200 bg-green-50 text-green-300">
+                <svg className="h-12 w-12" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75" />
+                </svg>
+              </div>
+            )}
+          </div>
+
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-lg bg-green-600 py-2.5 text-sm font-medium text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-70"
+            className="w-full rounded-xl bg-green-600 py-2.5 text-sm font-medium text-white transition hover:bg-green-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {isSubmitting ? 'Salvando...' : 'Criar residência'}
+            {isSubmitting && selectedImage ? 'Enviando imagem...' : isSubmitting ? 'Salvando...' : 'Criar residência'}
           </button>
         </form>
       </div>
