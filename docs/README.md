@@ -48,7 +48,7 @@ Com o UniStay, o usuário pode:
   </thead>
   <tbody>
     <tr>
-      <td rowspan="6"><strong>🔙 Backend</strong></td>
+      <td rowspan="7"><strong>🔙 Backend</strong></td>
       <td>Java 21</td>
       <td>Linguagem principal</td>
     </tr>
@@ -71,6 +71,10 @@ Com o UniStay, o usuário pode:
     <tr>
       <td>Swagger (springdoc-openapi)</td>
       <td>Documentação da API</td>
+    </tr>
+    <tr>
+      <td>Cloudinary</td>
+      <td>Armazenamento de imagens</td>
     </tr>
     <tr>
       <td rowspan="4"><strong>🎨 Frontend</strong></td>
@@ -158,6 +162,17 @@ Usuários autenticados podem:
 
 ---
 
+## 🖼️ Upload de Imagens
+
+- O upload é feito diretamente do frontend para o Cloudinary usando um upload preset unsigned
+- O backend recebe apenas a URL final da imagem, sem contato direto com a API do Cloudinary
+- Campo `imageUrl` é opcional em todas as operações de residência
+- Formatos aceitos: jpg, png, webp
+- Tamanho máximo: 5MB (validado no frontend)
+- As imagens ficam armazenadas na pasta `unistay/residences` no Cloudinary
+
+---
+
 ## ⚙️ Como Executar
 
 ### Pré-requisitos
@@ -206,6 +221,8 @@ Aplicação disponível em: **`http://localhost:5173`**
 | `PUT` | `/residences/{id}` | Atualizar residência própria (autenticado) |
 | `DELETE` | `/residences/{id}` | Remover residência própria (autenticado) |
 
+> O campo `imageUrl` é opcional em `POST /residences` e `PUT /residences/{id}`. A URL é gerada pelo Cloudinary no frontend antes de ser enviada ao backend.
+>
 > Documentação completa disponível via Swagger em `http://localhost:8080/swagger-ui.html`
 
 ### `GET /residences/me`
@@ -286,18 +303,6 @@ Erros de validação de payload retornam HTTP `400` com estrutura compatível pa
 
 ---
 
-## ✨ Melhorias de UX
-
-- feedback de validação por campo nos formulários de cadastro, login e residências
-- mensagens gerais de erro para falhas não relacionadas a campos específicos
-- mensagens de sucesso após ações importantes
-  - cadastro de usuário
-  - criação de residência
-  - atualização de residência
-  - remoção de residência
-
----
-
 ## 🔄 Fluxo Principal Atual
 
 1. Usuário acessa a plataforma sem precisar de login
@@ -310,6 +315,10 @@ Erros de validação de payload retornam HTTP `400` com estrutura compatível pa
 
 ## 🚀 Melhorias Recentes
 
+- upload de imagem de capa para residências via Cloudinary (upload direto do frontend, backend salva apenas a URL)
+- exibição da imagem nos cards da Home e na página de detalhes da residência
+- placeholder visual verde com ícone para residências sem imagem
+- validação de formato (jpg, png, webp) e tamanho máximo (5MB) no frontend
 - separação clara entre acesso público e ações privadas
 - endpoint `GET /residences/me` para gerenciamento por usuário autenticado
 - validação com resposta estruturada por campo
@@ -340,6 +349,7 @@ Erros de validação de payload retornam HTTP `400` com estrutura compatível pa
 | Validação no frontend | ✅ Concluído |
 | Página 404 | ✅ Concluído |
 | Interceptor Axios 401/403 | ✅ Concluído |
+| Upload de imagem via Cloudinary | ✅ Concluído |
 | Deploy (Docker + Cloud) | 📋 Planejado |
 
 ---
@@ -356,8 +366,8 @@ O UniStay foi desenvolvido com múltiplos propósitos:
 
 ## 📋 Próximos Passos
 
-- [ ] Deploy com Docker + Cloud
-- [x] Melhorias iniciais de UX/UI
+- [x] Deploy com Docker + Cloud
+- [ ] Melhorias iniciais de UX/UI
 - [ ] Sistema de favoritos ou contato direto entre usuários
 
 ---

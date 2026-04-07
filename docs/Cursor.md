@@ -65,6 +65,7 @@ Para manter o projeto simples e executável em 1 semana, NÃO será implementado
 * JUnit + Mockito (TDD)
 * Docker (planejado)
 * Swagger (springdoc-openapi)
+* Cloudinary (upload de imagens via preset unsigned)
 
 ---
 
@@ -122,6 +123,7 @@ Arquitetura em camadas:
 * location
 * price (> 0)
 * contactPhone
+* imageUrl (opcional, URL gerada pelo Cloudinary)
 * user (dono da residência)
 
 ---
@@ -149,6 +151,20 @@ A aplicação utiliza autenticação **stateless com JWT**:
 
 ---
 
+## 🖼️ Upload de Imagens (Cloudinary)
+
+* Fluxo: frontend envia imagem direto ao Cloudinary → recebe `secure_url` → envia URL para o backend
+* O backend nunca contata a API do Cloudinary diretamente
+* Upload preset: unsigned (não expõe API secret)
+* Pasta no Cloudinary: `unistay/residences`
+* Utilitário: `src/utils/uploadImage.js` com função `uploadImage(file)`
+* Validações no frontend: formato (jpg, png, webp) e tamanho máximo 5MB
+* Campo `imageUrl` é opcional em criação e edição de residências
+* Preview da imagem exibido antes do envio com `URL.createObjectURL`
+* Loading state durante o upload com botão desabilitado
+
+---
+
 ## 🧪 Funcionalidades (MVP)
 
 ### Autenticação
@@ -166,6 +182,9 @@ A aplicação utiliza autenticação **stateless com JWT**:
 * Criar residência (autenticado)
 * Atualizar residência (somente dono)
 * Deletar residência (somente dono)
+* Upload de imagem de capa ao criar/editar residência (opcional)
+* Exibição da imagem nos cards da listagem e na página de detalhes
+* Placeholder visual para residências sem imagem
 
 ---
 
@@ -331,6 +350,11 @@ O desenvolvimento segue ciclos curtos:
 
 ## 🆕 Melhorias Recentes
 
+* upload de imagem de capa via Cloudinary com preset unsigned
+* utilitário `uploadImage.js` para envio direto ao Cloudinary
+* preview de imagem nos formulários de criação e edição
+* placeholder verde com ícone SVG para residências sem imagem
+* validação de formato e tamanho no frontend antes do upload
 * separação entre navegação pública e operações autenticadas
 * endpoint `GET /residences/me`
 * home pública com visualização somente leitura
