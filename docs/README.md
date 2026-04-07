@@ -214,13 +214,24 @@ Aplicação disponível em: **`http://localhost:5173`**
 |--------|------|-----------|
 | `POST` | `/auth/login` | Autenticação do usuário |
 | `POST` | `/users` | Cadastro de novo usuário |
-| `GET` | `/residences` | Listar todas as residências (público) |
+| `GET` | `/residences` | Listar residências (público) com parâmetros opcionais `page` (padrão: 0) e `size` (padrão: 9) |
 | `GET` | `/residences/{id}` | Buscar residência por ID (público) |
 | `GET` | `/residences/me` | Listar residências do usuário autenticado |
 | `POST` | `/residences` | Criar nova residência (autenticado) |
 | `PUT` | `/residences/{id}` | Atualizar residência própria (autenticado) |
 | `DELETE` | `/residences/{id}` | Remover residência própria (autenticado) |
 
+> A resposta paginada de `GET /residences` segue o formato:
+>
+> ```json
+> {
+>   "content": [...],
+>   "currentPage": 0,
+>   "totalPages": 5,
+>   "totalElements": 43
+> }
+> ```
+>
 > O campo `imageUrl` é opcional em `POST /residences` e `PUT /residences/{id}`. A URL é gerada pelo Cloudinary no frontend antes de ser enviada ao backend.
 >
 > Documentação completa disponível via Swagger em `http://localhost:8080/swagger-ui.html`
@@ -315,6 +326,9 @@ Erros de validação de payload retornam HTTP `400` com estrutura compatível pa
 
 ## 🚀 Melhorias Recentes
 
+- paginação no endpoint `GET /residences` com parâmetros `page` e `size` (padrão: 9 por página, ordenado por mais recentes)
+- controles de navegação entre páginas no frontend com reset automático ao filtrar
+- exibição do total de residências encontradas
 - upload de imagem de capa para residências via Cloudinary (upload direto do frontend, backend salva apenas a URL)
 - exibição da imagem nos cards da Home e na página de detalhes da residência
 - placeholder visual verde com ícone para residências sem imagem
@@ -350,6 +364,7 @@ Erros de validação de payload retornam HTTP `400` com estrutura compatível pa
 | Página 404 | ✅ Concluído |
 | Interceptor Axios 401/403 | ✅ Concluído |
 | Upload de imagem via Cloudinary | ✅ Concluído |
+| Paginação no backend com Pageable | ✅ Concluído |
 | Deploy (Docker + Cloud) | 📋 Planejado |
 
 ---

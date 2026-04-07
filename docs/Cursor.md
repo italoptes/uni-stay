@@ -165,6 +165,18 @@ A aplicação utiliza autenticação **stateless com JWT**:
 
 ---
 
+## 📄 Paginação
+
+* Endpoint `GET /residences` aceita `?page=0&size=9`
+* Retorna `ResidencePageResponseDTO` com `content`, `currentPage`, `totalPages` e `totalElements`
+* Ordenação por `id` decrescente (mais recentes primeiro)
+* Frontend controla página atual com estado `currentPage`
+* Troca de página dispara nova requisição e scroll suave para o topo
+* Filtros de texto e preço resetam `currentPage` para `0` automaticamente
+* `GET /residences/me` não é paginado
+
+---
+
 ## 🧪 Funcionalidades (MVP)
 
 ### Autenticação
@@ -177,6 +189,7 @@ A aplicação utiliza autenticação **stateless com JWT**:
 ### Residências
 
 * Listar residências publicamente
+* Listagem pública paginada com parâmetros `page` e `size` (padrão: 9 por página)
 * Buscar residência por ID publicamente
 * Buscar residências do usuário autenticado em `/residences/me`
 * Criar residência (autenticado)
@@ -350,6 +363,11 @@ O desenvolvimento segue ciclos curtos:
 
 ## 🆕 Melhorias Recentes
 
+* paginação no backend com Pageable no endpoint `GET /residences`
+* `ResidencePageResponseDTO` com `content`, `currentPage`, `totalPages` e `totalElements`
+* controles de navegação entre páginas no frontend
+* reset automático de página ao aplicar filtros
+* exibição do total de residências encontradas
 * upload de imagem de capa via Cloudinary com preset unsigned
 * utilitário `uploadImage.js` para envio direto ao Cloudinary
 * preview de imagem nos formulários de criação e edição
