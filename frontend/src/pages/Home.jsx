@@ -71,13 +71,31 @@ function Home() {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [priceFilter, setPriceFilter] = useState('any');
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
 
   useEffect(() => {
     const fetchResidences = async () => {
+      setLoading(true);
+      setError('');
+
       try {
-        const response = await api.get('/residences');
-        setResidences(Array.isArray(response.data) ? response.data : []);
+        const response = await api.get('/residences', {
+          params: {
+            page: currentPage,
+            size: 9,
+          },
+        });
+        const pageData = response.data;
+
+        setResidences(Array.isArray(pageData?.content) ? pageData.content : []);
+        setTotalPages(typeof pageData?.totalPages === 'number' ? pageData.totalPages : 0);
+        setTotalElements(typeof pageData?.totalElements === 'number' ? pageData.totalElements : 0);
       } catch {
+        setResidences([]);
+        setTotalPages(0);
+        setTotalElements(0);
         setError('Não foi possível carregar as residências no momento.');
       } finally {
         setLoading(false);
@@ -85,7 +103,16 @@ function Home() {
     };
 
     fetchResidences();
-  }, []);
+  }, [currentPage]);
+
+  const handlePageChange = (page) => {
+    if (page < 0 || page >= totalPages || page === currentPage) {
+      return;
+    }
+
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const normalizedSearch = searchTerm.trim().toLowerCase();
   const filteredResidences = residences.filter((residence) => {
@@ -150,14 +177,20 @@ function Home() {
               <input
                 type="text"
                 value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
+                  setCurrentPage(0);
+                }}
                 placeholder="Buscar por título ou localização"
                 className="w-full rounded-lg border border-gray-200 py-2 pl-9 pr-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
             <select
               value={priceFilter}
-              onChange={(event) => setPriceFilter(event.target.value)}
+              onChange={(event) => {
+                setPriceFilter(event.target.value);
+                setCurrentPage(0);
+              }}
               className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option value="any">Qualquer preço</option>
@@ -201,11 +234,40 @@ function Home() {
 
         {/* Grid de cards */}
         {!loading && !error && filteredResidences.length > 0 && (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredResidences.map((residence) => (
-                  <ResidenceCard key={residence.id} residence={residence} />
-              ))}
-            </div>
+            <>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {filteredResidences.map((residence) => (
+                    <ResidenceCard key={residence.id} residence={residence} />
+                ))}
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 0}
+                    className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Anterior
+                  </button>
+                  <span className="text-sm font-medium text-gray-600">
+                    Página {totalPages === 0 ? 0 : currentPage + 1} de {Math.max(totalPages, 0)}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={totalPages === 0 || currentPage === totalPages - 1}
+                    className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Próxima
+                  </button>
+                </div>
+                <p className="text-center text-sm text-gray-400">
+                  {totalElements} {totalElements === 1 ? 'residência encontrada' : 'residências encontradas'}
+                </p>
+              </div>
+            </>
         )}
 
       </section>

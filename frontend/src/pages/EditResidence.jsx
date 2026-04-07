@@ -12,7 +12,7 @@ function EditResidence() {
     location: '',
     price: '',
     contactPhone: '',
-    imageUrl: '',
+    imageUrl: null,
   });
   const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(true);
@@ -21,6 +21,7 @@ function EditResidence() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
   const [uploadError, setUploadError] = useState('');
+  const [removeCurrentImage, setRemoveCurrentImage] = useState(false);
 
   useEffect(() => {
     const fetchResidence = async () => {
@@ -34,9 +35,10 @@ function EditResidence() {
           location: residence.location ?? '',
           price: residence.price ?? '',
           contactPhone: residence.contactPhone ?? '',
-          imageUrl: residence.imageUrl ?? '',
+          imageUrl: residence.imageUrl ?? null,
         });
         setPreviewUrl(residence.imageUrl ?? '');
+        setRemoveCurrentImage(false);
       } catch {
         setErrorMessage('Não foi possível carregar a residência.');
       } finally {
@@ -79,7 +81,24 @@ function EditResidence() {
     const file = event.target.files?.[0] ?? null;
 
     setSelectedImage(file);
-    setPreviewUrl((current) => (file ? current : formData.imageUrl || ''));
+    setFormData((current) => ({
+      ...current,
+      imageUrl: file ? current.imageUrl : removeCurrentImage ? null : current.imageUrl,
+    }));
+    setPreviewUrl((current) => (file ? current : removeCurrentImage ? '' : formData.imageUrl || ''));
+    setRemoveCurrentImage(false);
+    setUploadError('');
+    setErrorMessage('');
+  };
+
+  const handleRemoveImage = () => {
+    setSelectedImage(null);
+    setPreviewUrl('');
+    setRemoveCurrentImage(true);
+    setFormData((current) => ({
+      ...current,
+      imageUrl: null,
+    }));
     setUploadError('');
     setErrorMessage('');
   };
@@ -115,7 +134,7 @@ function EditResidence() {
     setIsSubmitting(true);
 
     try {
-      let imageUrl = formData.imageUrl || null;
+      let imageUrl = removeCurrentImage ? null : formData.imageUrl || null;
 
       if (selectedImage) {
         try {
@@ -130,7 +149,7 @@ function EditResidence() {
       await api.put(`/residences/${id}`, {
         ...formData,
         price: Number(formData.price),
-        imageUrl,
+        imageUrl: imageUrl ?? null,
       });
       localStorage.setItem('successMessage', 'Residência atualizada com sucesso!');
       navigate('/my-residences');
@@ -295,11 +314,20 @@ function EditResidence() {
             />
             <p className="text-xs text-gray-400">Opcional. Você pode manter a imagem atual ou enviar uma nova.</p>
             {previewUrl ? (
-              <img
-                src={previewUrl}
-                alt="Preview da imagem da residência"
-                className="h-48 w-full rounded-xl border border-gray-200 object-cover shadow-sm"
-              />
+              <div className="space-y-2">
+                <img
+                  src={previewUrl}
+                  alt="Preview da imagem da residência"
+                  className="h-48 w-full rounded-xl border border-gray-200 object-cover shadow-sm"
+                />
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className="cursor-pointer text-sm text-red-500 underline hover:text-red-700"
+                >
+                  Remover imagem
+                </button>
+              </div>
             ) : (
               <div className="flex h-48 items-center justify-center rounded-xl border border-dashed border-gray-200 bg-green-50 text-green-300">
                 <svg className="h-12 w-12" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
