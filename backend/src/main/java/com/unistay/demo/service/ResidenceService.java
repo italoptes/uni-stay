@@ -1,10 +1,15 @@
 package com.unistay.demo.service;
 
+import com.unistay.demo.dto.ResidencePageResponseDTO;
+import com.unistay.demo.dto.ResidenceResponseDTO;
 import com.unistay.demo.entity.Residence;
 import com.unistay.demo.entity.User;
 import com.unistay.demo.repository.ResidenceRepository;
 import com.unistay.demo.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -32,8 +37,19 @@ public class ResidenceService {
 		return residenceRepository.save(residence);
 	}
 
-	public List<Residence> getAllResidences() {
-		return residenceRepository.findAll();
+	public ResidencePageResponseDTO getAllResidences(int page, int size) {
+		PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+		Page<Residence> residencePage = residenceRepository.findAll(pageable);
+
+		return new ResidencePageResponseDTO(
+				residencePage.getContent()
+						.stream()
+						.map(ResidenceResponseDTO::fromEntity)
+						.toList(),
+				residencePage.getNumber(),
+				residencePage.getTotalPages(),
+				residencePage.getTotalElements()
+		);
 	}
 
 	public Optional<Residence> getResidenceById(Long id) {
@@ -65,9 +81,7 @@ public class ResidenceService {
 		existing.setLocation(updated.getLocation());
 		existing.setPrice(updated.getPrice());
 		existing.setContactPhone(updated.getContactPhone());
-		if (updated.getImageUrl() != null) {
-			updated.setImageUrl(updated.getImageUrl());
-		}
+		existing.setImageUrl(updated.getImageUrl());
 
 		return residenceRepository.save(existing);
 	}

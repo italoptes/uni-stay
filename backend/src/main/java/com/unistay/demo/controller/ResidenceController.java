@@ -1,5 +1,6 @@
 package com.unistay.demo.controller;
 
+import com.unistay.demo.dto.ResidencePageResponseDTO;
 import com.unistay.demo.dto.ResidenceRequestDTO;
 import com.unistay.demo.dto.ResidenceResponseDTO;
 import com.unistay.demo.entity.Residence;
@@ -42,16 +43,14 @@ public class ResidenceController implements ResidenceControllerOpenApi {
         return ResponseEntity.status(201).body(ResidenceResponseDTO.fromEntity(saved));
     }
 
-    @GetMapping
-    public ResponseEntity<List<ResidenceResponseDTO>> getAll() {
+	@GetMapping
+	public ResponseEntity<ResidencePageResponseDTO> getAll(
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "9") int size
+	) {
 
-        List<ResidenceResponseDTO> response = residenceService.getAllResidences()
-                .stream()
-                .map(ResidenceResponseDTO::fromEntity)
-                .toList();
-
-        return ResponseEntity.ok(response);
-    }
+		return ResponseEntity.ok(residenceService.getAllResidences(page, size));
+	}
 
     @GetMapping("/{id}")
     public ResponseEntity<ResidenceResponseDTO> getById(@PathVariable Long id) {
