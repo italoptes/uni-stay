@@ -25,6 +25,9 @@ public record ResidenceRequestDTO(
 
         @NotBlank
         @Size(max = 20)
-        String contactPhone
+        String contactPhone,
+
+        @Size(max = 500)
+        String imageUrl
 ) {
 }

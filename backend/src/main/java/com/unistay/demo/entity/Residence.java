@@ -38,6 +38,9 @@ public class Residence {
 	@Column(name = "contact_phone", length = 20)
 	private String contactPhone;
 
+	@Column(name = "image_url")
+	private String imageUrl;
+
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(
 			name = "user_id",

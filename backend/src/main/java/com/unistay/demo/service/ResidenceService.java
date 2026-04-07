@@ -65,6 +65,9 @@ public class ResidenceService {
 		existing.setLocation(updated.getLocation());
 		existing.setPrice(updated.getPrice());
 		existing.setContactPhone(updated.getContactPhone());
+		if (updated.getImageUrl() != null) {
+			updated.setImageUrl(updated.getImageUrl());
+		}
 
 		return residenceRepository.save(existing);
 	}

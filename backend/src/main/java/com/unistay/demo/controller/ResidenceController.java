@@ -35,20 +35,11 @@ public class ResidenceController implements ResidenceControllerOpenApi {
         residence.setLocation(dto.location());
         residence.setPrice(dto.price());
         residence.setContactPhone(dto.contactPhone());
+        residence.setImageUrl(dto.imageUrl());
 
         Residence saved = residenceService.createResidence(residence, user.getId());
 
-        return ResponseEntity.status(201).body(
-                new ResidenceResponseDTO(
-                        saved.getId(),
-                        saved.getTitle(),
-                        saved.getDescription(),
-                        saved.getLocation(),
-                        saved.getPrice(),
-                        saved.getContactPhone(),
-                        saved.getUser().getId()
-                )
-        );
+        return ResponseEntity.status(201).body(ResidenceResponseDTO.fromEntity(saved));
     }
 
     @GetMapping
@@ -56,15 +47,7 @@ public class ResidenceController implements ResidenceControllerOpenApi {
 
         List<ResidenceResponseDTO> response = residenceService.getAllResidences()
                 .stream()
-                .map(r -> new ResidenceResponseDTO(
-                        r.getId(),
-                        r.getTitle(),
-                        r.getDescription(),
-                        r.getLocation(),
-                        r.getPrice(),
-                        r.getContactPhone(),
-                        r.getUser().getId()
-                ))
+                .map(ResidenceResponseDTO::fromEntity)
                 .toList();
 
         return ResponseEntity.ok(response);
@@ -74,17 +57,7 @@ public class ResidenceController implements ResidenceControllerOpenApi {
     public ResponseEntity<ResidenceResponseDTO> getById(@PathVariable Long id) {
 
         return residenceService.getResidenceById(id)
-                .map(r -> ResponseEntity.ok(
-                        new ResidenceResponseDTO(
-                                r.getId(),
-                                r.getTitle(),
-                                r.getDescription(),
-                                r.getLocation(),
-                                r.getPrice(),
-                                r.getContactPhone(),
-                                r.getUser().getId()
-                        )
-                ))
+                .map(r -> ResponseEntity.ok(ResidenceResponseDTO.fromEntity(r)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -96,15 +69,7 @@ public class ResidenceController implements ResidenceControllerOpenApi {
 
         List<ResidenceResponseDTO> response = residenceService.getResidencesByUser(user.getId())
                 .stream()
-                .map(r -> new ResidenceResponseDTO(
-                        r.getId(),
-                        r.getTitle(),
-                        r.getDescription(),
-                        r.getLocation(),
-                        r.getPrice(),
-                        r.getContactPhone(),
-                        r.getUser().getId()
-                ))
+                .map(ResidenceResponseDTO::fromEntity)
                 .toList();
 
         return ResponseEntity.ok(response);
@@ -123,20 +88,11 @@ public class ResidenceController implements ResidenceControllerOpenApi {
         updated.setLocation(dto.location());
         updated.setPrice(dto.price());
         updated.setContactPhone(dto.contactPhone());
+        updated.setImageUrl(dto.imageUrl());
 
         Residence saved = residenceService.updateResidence(id, updated, user.getId());
 
-        return ResponseEntity.ok(
-                new ResidenceResponseDTO(
-                        saved.getId(),
-                        saved.getTitle(),
-                        saved.getDescription(),
-                        saved.getLocation(),
-                        saved.getPrice(),
-                        saved.getContactPhone(),
-                        saved.getUser().getId()
-                )
-        );
+        return ResponseEntity.ok(ResidenceResponseDTO.fromEntity(saved));
     }
 
     @DeleteMapping("/{id}")
