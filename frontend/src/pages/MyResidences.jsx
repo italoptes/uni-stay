@@ -279,33 +279,34 @@ function MyResidences() {
   });
 
   return (
-    <section className="mx-auto max-w-6xl space-y-8 px-4 py-10 xl:max-w-7xl">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight text-gray-900">Minhas residências</h1>
-          <p className="mt-1 text-sm text-gray-500">Gerencie os imóveis cadastrados na sua conta.</p>
-        </div>
+    <>
+      <section className="mx-auto max-w-6xl space-y-8 px-4 py-10 xl:max-w-7xl">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h1 className="text-xl font-bold tracking-tight text-gray-900">Minhas residências</h1>
+            <p className="mt-1 text-sm text-gray-500">Gerencie os imóveis cadastrados na sua conta.</p>
+          </div>
 
-        <div className="self-start sm:self-auto">
-          <button
-            type="button"
-            onClick={() => setIsFiltersOpen((current) => !current)}
-            className="relative rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-50 active:scale-95"
-          >
-            <span className="flex items-center gap-2">
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.843.143 1.367 1.004.98 1.767A13.953 13.953 0 0116.5 11.25a2.25 2.25 0 00-.75 1.678v3.543c0 .597-.237 1.169-.659 1.591l-1.5 1.5a.75.75 0 01-1.281-.53v-6.104a2.25 2.25 0 00-.75-1.678A13.953 13.953 0 012.937 5.445c-.387-.763.137-1.624.98-1.767A48.523 48.523 0 0112 3z" />
-              </svg>
-              Filtros
-            </span>
-            {activeFiltersCount > 0 ? (
-              <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-green-600 text-xs font-semibold text-white">
-                {activeFiltersCount}
+          <div className="self-start sm:self-auto">
+            <button
+              type="button"
+              onClick={() => setIsFiltersOpen((current) => !current)}
+              className="relative rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-50 active:scale-95"
+            >
+              <span className="flex items-center gap-2">
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.843.143 1.367 1.004.98 1.767A13.953 13.953 0 0116.5 11.25a2.25 2.25 0 00-.75 1.678v3.543c0 .597-.237 1.169-.659 1.591l-1.5 1.5a.75.75 0 01-1.281-.53v-6.104a2.25 2.25 0 00-.75-1.678A13.953 13.953 0 012.937 5.445c-.387-.763.137-1.624.98-1.767A48.523 48.523 0 0112 3z" />
+                </svg>
+                Filtros
               </span>
-            ) : null}
-          </button>
+              {activeFiltersCount > 0 ? (
+                <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-green-600 text-xs font-semibold text-white">
+                  {activeFiltersCount}
+                </span>
+              ) : null}
+            </button>
+          </div>
         </div>
-      </div>
 
       <div className={`overflow-hidden transition-all duration-300 ease-out ${isFiltersOpen ? 'max-h-[32rem] opacity-100' : 'max-h-0 opacity-0'}`}>
         <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
@@ -428,19 +429,20 @@ function MyResidences() {
         </div>
       ) : null}
 
-      {!loading && filteredResidences.length > 0 ? (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filteredResidences.map((residence) => (
-            <ResidenceCard key={residence.id} residence={residence} onDelete={handleDeleteResidence} />
-          ))}
-        </div>
-      ) : null}
-    </section>
-    <ConfirmDeleteModal
-      isOpen={isModalOpen}
-      onClose={handleCloseDeleteModal}
-      onConfirm={handleDeleteResidence}
-    />
+        {!loading && filteredResidences.length > 0 ? (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {filteredResidences.map((residence) => (
+              <ResidenceCard key={residence.id} residence={residence} onDelete={handleOpenDeleteModal} />
+            ))}
+          </div>
+        ) : null}
+      </section>
+      <ConfirmDeleteModal
+        isOpen={isModalOpen}
+        onClose={handleCloseDeleteModal}
+        onConfirm={handleDeleteResidence}
+      />
+    </>
   );
 }
 
