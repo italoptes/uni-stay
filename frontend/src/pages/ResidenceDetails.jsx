@@ -86,7 +86,7 @@ function ResidenceDetails() {
 
     if (loading) {
         return (
-            <section className="mx-auto max-w-2xl px-4 py-10 space-y-4 animate-pulse">
+            <section className="mx-auto max-w-3xl space-y-4 px-4 py-10 animate-pulse lg:max-w-4xl">
                 <div className="bg-gray-100 h-64 rounded-xl mb-6" />
                 <div className="h-5 w-24 rounded bg-gray-100" />
                 <div className="h-7 w-2/3 rounded bg-gray-100" />
@@ -106,7 +106,7 @@ function ResidenceDetails() {
 
     if (errorMessage) {
         return (
-            <section className="mx-auto max-w-2xl px-4 py-10">
+            <section className="mx-auto max-w-3xl px-4 py-10 lg:max-w-4xl">
                 <button
                     onClick={() => navigate('/')}
                     className="mb-6 flex items-center gap-1.5 text-sm text-gray-500 transition hover:text-gray-800"
@@ -128,7 +128,7 @@ function ResidenceDetails() {
 
     if (!residence) {
         return (
-            <section className="mx-auto max-w-2xl px-4 py-10">
+            <section className="mx-auto max-w-3xl px-4 py-10 lg:max-w-4xl">
                 <button
                     onClick={() => navigate('/')}
                     className="mb-6 flex items-center gap-1.5 text-sm text-gray-500 transition hover:text-gray-800"
@@ -144,7 +144,7 @@ function ResidenceDetails() {
     }
 
     return (
-        <section className="mx-auto max-w-2xl px-4 py-10">
+        <section className="mx-auto max-w-3xl px-4 py-10 lg:max-w-4xl">
             <ResidenceHeroImage imageUrl={residence.imageUrl} />
 
             <button

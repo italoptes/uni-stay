@@ -152,7 +152,8 @@ function CreateResidence() {
 
   return (
     <section className="mt-6 mb-6">
-      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="mx-auto max-w-md sm:max-w-lg md:max-w-xl">
+        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="mb-6 text-center">
           <h1 className="mb-2 text-2xl font-semibold tracking-tight text-gray-800">
             Nova residência
@@ -254,7 +255,7 @@ function CreateResidence() {
             ) : null}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="capacity">
                 Capacidade (pessoas)
@@ -400,6 +401,7 @@ function CreateResidence() {
             {isSubmitting && selectedImage ? 'Enviando imagem...' : isSubmitting ? 'Salvando...' : 'Criar residência'}
           </button>
         </form>
+        </div>
       </div>
     </section>
   );

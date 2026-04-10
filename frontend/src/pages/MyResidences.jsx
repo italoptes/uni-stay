@@ -3,13 +3,21 @@ import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { getTypeLabel } from '../utils/residenceLabels';
 
-function ResidenceImage({ imageUrl, className = 'h-40 w-full rounded-t-xl' }) {
+function ResidenceImage({ imageUrl, className = 'aspect-[4/3] w-full rounded-t-xl' }) {
   if (imageUrl) {
-    return <img src={imageUrl} alt="Capa da residência" className={`object-cover ${className}`} />;
+    return (
+      <div className={`overflow-hidden ${className}`}>
+        <img
+          src={imageUrl}
+          alt="Capa da residência"
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+      </div>
+    );
   }
 
   return (
-    <div className={`flex items-center justify-center bg-green-50 text-green-300 ${className}`}>
+    <div className={`flex overflow-hidden items-center justify-center bg-green-50 text-green-300 ${className}`}>
       <svg className="h-12 w-12" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75" />
       </svg>
@@ -74,11 +82,11 @@ function ResidenceInfoRow({ residence }) {
 
 function ResidenceCard({ residence, onDelete }) {
   return (
-    <article className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:border-green-200 hover:shadow-md">
+    <article className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:border-green-300 hover:shadow-lg">
       <ResidenceImage imageUrl={residence.imageUrl} />
 
       <div className="flex flex-1 flex-col gap-1 p-5">
-        <h2 className="text-sm font-semibold leading-snug text-gray-800">{residence.title}</h2>
+        <h2 className="line-clamp-2 text-sm font-semibold leading-snug text-gray-800">{residence.title}</h2>
         <div className="mt-0.5 flex items-center gap-1">
           <svg className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -123,8 +131,8 @@ function ResidenceCard({ residence, onDelete }) {
 
 function SkeletonCard() {
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-      <div className="h-40 animate-pulse rounded-t-xl bg-gray-100" />
+    <div className="h-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      <div className="aspect-[4/3] animate-pulse rounded-t-xl bg-gray-100" />
       <div className="flex flex-col gap-2 p-5">
         <div className="h-3.5 w-3/4 rounded bg-gray-100" />
         <div className="h-3 w-1/2 rounded bg-gray-100" />
@@ -253,7 +261,7 @@ function MyResidences() {
   });
 
   return (
-    <section className="mx-auto max-w-5xl space-y-8 px-4 py-10">
+    <section className="mx-auto max-w-6xl space-y-8 px-4 py-10 xl:max-w-7xl">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-xl font-bold tracking-tight text-gray-900">Minhas residências</h1>
@@ -385,7 +393,7 @@ function MyResidences() {
       ) : null}
 
       {loading ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 3 }).map((_, index) => (
             <SkeletonCard key={index} />
           ))}
@@ -403,7 +411,7 @@ function MyResidences() {
       ) : null}
 
       {!loading && filteredResidences.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredResidences.map((residence) => (
             <ResidenceCard key={residence.id} residence={residence} onDelete={handleDeleteResidence} />
           ))}

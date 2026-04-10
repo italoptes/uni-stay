@@ -66,7 +66,8 @@ function Login() {
 
   return (
     <section className="mt-6 mb-6">
-      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="mx-auto max-w-md sm:max-w-lg md:max-w-xl">
+        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="mb-6 text-center">
           <h1 className="mb-2 text-2xl font-semibold tracking-tight text-gray-800">
             Entrar na conta
@@ -136,6 +137,7 @@ function Login() {
             {isSubmitting ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
+        </div>
       </div>
     </section>
   );

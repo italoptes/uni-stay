@@ -49,7 +49,7 @@ function Layout() {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800">
       <header className="border-b border-gray-200 bg-white sticky top-0 z-50">
-        <div className="mx-auto flex max-w-md items-center justify-between gap-4 px-4 py-3">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 xl:max-w-7xl">
 
           <NavLink to="/" className="flex items-center gap-2">
             <img src={logo} alt="UniStay" className="h-12 w-auto" />
@@ -133,7 +133,7 @@ function Layout() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-md px-4 py-6">
+      <main className="mx-auto max-w-6xl px-4 py-8 xl:max-w-7xl">
         <Outlet />
       </main>
     </div>
