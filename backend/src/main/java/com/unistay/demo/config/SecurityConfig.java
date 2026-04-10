@@ -68,7 +68,9 @@ public class SecurityConfig {
 		configuration.setAllowedOriginPatterns(List.of(
 				"http://localhost:*",
 				"https://unistay.shop",
-				"https://*.unistay.shop"
+				"https://*.unistay.shop",
+				"https://*.onrender.com",
+				"https://*.vercel.app"
 		));
 		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
