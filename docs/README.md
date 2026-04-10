@@ -1,8 +1,4 @@
-<div align="center">
-
-<br/>
-
-# 🏡 UniStay
+# 🏠 UniStay
 
 **Encontre, cadastre e gerencie moradias estudantis com segurança e simplicidade.**
 
@@ -19,25 +15,23 @@
 
 <br/>
 
-</div>
-
 ---
 
-## 📌 Sobre o Projeto
+## 📖 Sobre o Projeto
 
 O **UniStay** é uma plataforma full-stack que conecta estudantes a opções de moradia de forma segura e organizada. A aplicação foi construída com foco em boas práticas de engenharia de software, incluindo separação clara de responsabilidades, arquitetura em camadas e autenticação moderna via JWT.
 
 Com o UniStay, o usuário pode:
 
 - 🔐 Criar conta e autenticar-se com segurança (JWT stateless)
-- 🔍 Visualizar residências disponíveis sem precisar de login
-- 🏠 Visualizar detalhes de residências publicadas
-- 🏠 Cadastrar e gerenciar suas próprias residências após autenticação
+- 🏘️ Visualizar residências disponíveis sem precisar de login
+- 🔍 Visualizar detalhes de residências publicadas
+- ➕ Cadastrar e gerenciar suas próprias residências após autenticação
 - 📋 Administrar suas próprias publicações em uma área pessoal
 
 ---
 
-## 🚀 Tecnologias
+## 🛠️ Tecnologias
 
 <table>
   <thead>
@@ -49,7 +43,7 @@ Com o UniStay, o usuário pode:
   </thead>
   <tbody>
     <tr>
-      <td rowspan="7"><strong>🔙 Backend</strong></td>
+      <td rowspan="7"><strong>⚙️ Backend</strong></td>
       <td>Java 21</td>
       <td>Linguagem principal</td>
     </tr>
@@ -95,7 +89,7 @@ Com o UniStay, o usuário pode:
       <td>Navegação entre páginas</td>
     </tr>
     <tr>
-      <td rowspan="2"><strong>🐳 Infra</strong></td>
+      <td rowspan="2"><strong>☁️ Infra</strong></td>
       <td>Docker + Docker Compose</td>
       <td>Containerização e orquestração</td>
     </tr>
@@ -108,15 +102,93 @@ Com o UniStay, o usuário pode:
 
 ---
 
-## 🧠 Arquitetura
+## ☁️ Deploy
+
+A aplicação está **completamente deployada em produção** com domínio personalizado, separação entre backend, frontend e banco de dados em serviços cloud independentes.
+
+🌐 **Acesse agora: [unistay.shop](https://unistay.shop)**
+
+---
+
+### 🏗️ Arquitetura de Deploy
+
+```
+Usuário (Browser)
+↓
+Frontend → Vercel (unistay.shop)
+↓ HTTPS (Axios)
+Backend → Render (Web Service)
+↓
+PostgreSQL → Render (Managed DB)
+```
+
+| Camada | Serviço | Status |
+|--------|---------|--------|
+| **Frontend** | Vercel + domínio personalizado (`unistay.shop`) | ✅ Online |
+| **Backend (API)** | Render (Docker — Web Service) | ✅ Online |
+| **Banco de Dados** | PostgreSQL gerenciado pelo Render | ✅ Conectado |
+
+---
+
+### 🔙 Backend (Render)
+
+O backend é uma aplicação Spring Boot containerizada com Docker e executada como Web Service no Render.
+
+**Build:**
+- Multi-stage Docker build com Maven Wrapper (`./mvnw clean package`)
+- Imagem final contém apenas o runtime Java (leve e otimizada)
+
+**Configuração via variáveis de ambiente:**
+
+```env
+SPRING_DATASOURCE_URL=
+SPRING_DATASOURCE_USERNAME=
+SPRING_DATASOURCE_PASSWORD=
+JWT_SECRET=
+PORT=8080
+```
+
+> Nenhuma configuração sensível está hardcoded no código.
+
+---
+
+### 🗄️ Banco de Dados (Render)
+
+- PostgreSQL provisionado e gerenciado pelo Render
+- Acesso via URL interna (baixa latência com o backend)
+- Schema gerenciado automaticamente pelo Hibernate:
+
+```properties
+spring.jpa.hibernate.ddl-auto=update
+```
+
+---
+
+### 🌐 Frontend (Vercel)
+
+O frontend está deployado no Vercel com domínio personalizado e se comunica com o backend via variável de ambiente:
+
+```env
+VITE_API_URL=https://your-backend-url.onrender.com
+```
+
+---
+
+### 🔒 Segurança
+
+- Autenticação via JWT (stateless)
+- Token enviado no header: `Authorization: Bearer <token>`
+- Backend e banco desacoplados do ambiente local
+- CORS configurado para aceitar requisições do domínio de produção
+
+---
+
+## 🏛️ Arquitetura
 
 O projeto segue uma arquitetura em **camadas bem definidas**, garantindo separação clara de responsabilidades e facilidade de manutenção.
 
-### 🔙 Backend
-
-```
+### ⚙️ Backend
 entity → repository → service → controller
-```
 
 | Camada | Responsabilidade |
 |--------|-----------------|
@@ -127,10 +199,7 @@ entity → repository → service → controller
 | `Security` | Autenticação JWT stateless |
 
 ### 🎨 Frontend
-
-```
 pages → components → services → context → routes
-```
 
 | Camada | Responsabilidade |
 |--------|-----------------|
@@ -232,15 +301,15 @@ O backend está configurado para aceitar requisições de origens diferentes. Em
 
 ```java
 configuration.setAllowedOrigins(List.of(
-    "http://localhost:3000",
+                                        "http://localhost:3000",
     "http://localhost:5173",
-    "https://seudominio.com"  // adicionar ao fazer deploy
+                                        "https://unistay.shop"
 ));
 ```
 
 ---
 
-## ⚙️ Como Executar
+## ▶️ Como Executar
 
 ### Com Docker (recomendado)
 
@@ -276,7 +345,7 @@ docker compose up -d --build
 
 **Pré-requisitos:** Java 21+, Node.js 18+, PostgreSQL rodando localmente.
 
-#### 📦 Backend
+#### ⚙️ Backend
 
 ```bash
 cd backend
@@ -287,7 +356,7 @@ Servidor disponível em: **`http://localhost:8080`**
 
 Swagger: **`http://localhost:8080/swagger-ui.html`**
 
-#### 💻 Frontend
+#### 🎨 Frontend
 
 ```bash
 cd frontend
@@ -388,32 +457,6 @@ Aplicação disponível em: **`http://localhost:5173`**
 
 ---
 
-## 🚀 Melhorias Recentes
-
-- containerização completa com Docker Compose (backend + frontend + postgres)
-- `application.properties` externalizado com variáveis de ambiente
-- `server.port` dinâmico via `${PORT:8080}`
-- CORS configurado para múltiplas origens (local e produção)
-- `Dockerfile` do backend com Maven Wrapper (`./mvnw clean package`)
-- `Dockerfile` do frontend com build React + Nginx
-- volume persistente para o banco PostgreSQL
-- paginação no endpoint `GET /residences` com parâmetros `page` e `size`
-- controles de navegação entre páginas no frontend com reset automático ao filtrar
-- upload de imagem via Cloudinary com preset unsigned
-- preview de imagem nos formulários de criação e edição
-- placeholder visual para residências sem imagem
-- endpoint `GET /residences/me` para gerenciamento por usuário autenticado
-- validação com resposta estruturada por campo
-- redesign completo das páginas LandingPage, Home, ResidenceDetails e MyResidences
-- skeleton loading nas listagens de residências
-- filtro client-side por texto (título e localização) e por faixa de preço
-- página 404 para rotas inexistentes
-- interceptor Axios para redirecionamento automático em erros 401/403
-- validação no frontend nos formulários de criação e edição
-- navbar com `sticky top-0` e `z-index` corrigido
-
----
-
 ## 📊 Status do Projeto
 
 | Funcionalidade | Status |
@@ -432,19 +475,20 @@ Aplicação disponível em: **`http://localhost:5173`**
 | Upload de imagem via Cloudinary | ✅ Concluído |
 | Paginação no backend com Pageable | ✅ Concluído |
 | Docker + Docker Compose | ✅ Concluído |
-| Deploy em VM + Cloudflare | 📋 Em andamento |
+| Deploy em Render + Vercel | ✅ Concluído |
+| Domínio personalizado (unistay.shop) | ✅ Concluído |
 
 ---
 
 ## 🎯 Objetivos do Projeto
 
 - 💼 **Portfólio profissional** — demonstração prática de habilidades full-stack
-- 🧪 **Boas práticas** — arquitetura limpa e separação de responsabilidades
-- 🌍 **Solução real** — plataforma pensada para um problema concreto de estudantes
+- 🏗️ **Boas práticas** — arquitetura limpa e separação de responsabilidades
+- 🎓 **Solução real** — plataforma pensada para um problema concreto de estudantes
 
 ---
 
-## 🧑‍💻 Autor
+## 👨‍💻 Autor
 
 <div align="center">
 

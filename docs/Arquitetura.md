@@ -299,9 +299,75 @@ A API possui documentação interativa via Swagger:
 
 ## 🚀 Deploy
 
-* Aplicação rodará inicialmente em homelab
-* Backend + PostgreSQL local
-* Docker será utilizado posteriormente
+A aplicação está **completamente deployada em produção** com domínio personalizado.
+
+🌐 **Acesse agora: [unistay.shop](https://unistay.shop)**
+
+### Arquitetura de Deploy
+
+```
+Usuário (Browser)
+↓
+Frontend → Vercel (unistay.shop)
+↓ HTTPS (Axios)
+Backend → Render (Web Service)
+↓
+PostgreSQL → Render (Managed DB)
+```
+
+| Camada | Serviço | Status |
+|--------|---------|--------|
+| **Frontend** | Vercel + domínio personalizado (`unistay.shop`) | ✅ Online |
+| **Backend (API)** | Render (Docker — Web Service) | ✅ Online |
+| **Banco de Dados** | PostgreSQL gerenciado pelo Render | ✅ Conectado |
+
+### Backend (Render)
+
+Aplicação Spring Boot containerizada com Docker, executada como Web Service no Render.
+
+**Build:** multi-stage Docker com Maven Wrapper (`./mvnw clean package`). Imagem final contém apenas o runtime Java.
+
+**Variáveis de ambiente necessárias:**
+
+```env
+SPRING_DATASOURCE_URL=
+SPRING_DATASOURCE_USERNAME=
+SPRING_DATASOURCE_PASSWORD=
+JWT_SECRET=
+PORT=8080
+```
+
+> Nenhuma configuração sensível está hardcoded no código.
+
+### Banco de Dados (Render)
+
+* PostgreSQL provisionado e gerenciado pelo Render
+* Acesso via URL interna (baixa latência com o backend)
+* Schema gerenciado automaticamente pelo Hibernate (`ddl-auto=update`)
+
+### Frontend (Vercel)
+
+Deployado no Vercel com domínio personalizado. Comunica com o backend via variável de ambiente:
+
+```env
+VITE_API_URL=https://your-backend-url.onrender.com
+```
+
+### Segurança em Produção
+
+* JWT stateless — token enviado via `Authorization: Bearer <token>`
+* CORS configurado para aceitar apenas origens confiáveis:
+
+```java
+configuration.setAllowedOrigins(List.of(
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "https://unistay.shop"
+));
+```
+
+* Backend e banco totalmente desacoplados do ambiente local
+* Nenhuma credencial versionada no repositório
 
 ---
 
