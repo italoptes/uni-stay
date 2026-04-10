@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../services/api';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 import { getTypeLabel } from '../utils/residenceLabels';
 
 function ResidenceHeroImage({ imageUrl }) {
@@ -64,6 +65,7 @@ function InfoGrid({ residence }) {
 
 function ResidenceDetails() {
     const { id } = useParams();
+    const { showToast } = useToast();
     const [residence, setResidence] = useState(null);
     const [loading, setLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState('');
@@ -76,6 +78,7 @@ function ResidenceDetails() {
                 setResidence(response.data);
             } catch {
                 setErrorMessage('Não foi possível carregar a residência.');
+                showToast('Não foi possível carregar a residência.', 'error');
             } finally {
                 setLoading(false);
             }

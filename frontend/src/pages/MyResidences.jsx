@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import api from '../services/api';
+import { useToast } from '../context/ToastContext';
 import { getTypeLabel } from '../utils/residenceLabels';
 
 function ResidenceImage({ imageUrl, className = 'aspect-[4/3] w-full rounded-t-xl' }) {
@@ -116,7 +118,7 @@ function ResidenceCard({ residence, onDelete }) {
           <button
             type="button"
             onClick={() => onDelete(residence.id)}
-            className="flex items-center gap-1.5 rounded-lg border border-red-100 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100 active:scale-95"
+            className="flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-red-700 active:scale-95"
           >
             <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
@@ -150,6 +152,7 @@ function SkeletonCard() {
 }
 
 function MyResidences() {
+  const { showToast } = useToast();
   const [residences, setResidences] = useState([]);
   const [loading, setLoading] = useState(true);
   const [successMessage, setSuccessMessage] = useState('');
@@ -158,6 +161,8 @@ function MyResidences() {
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [minimumCapacity, setMinimumCapacity] = useState('any');
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedResidenceId, setSelectedResidenceId] = useState(null);
 
   useEffect(() => {
     const storedSuccessMessage = localStorage.getItem('successMessage');
@@ -172,6 +177,7 @@ function MyResidences() {
         setResidences(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
         console.error('Não foi possível carregar as residências do usuário.', error);
+        showToast('Não foi possível carregar as residências.', 'error');
       } finally {
         setLoading(false);
       }
@@ -189,18 +195,30 @@ function MyResidences() {
     return () => window.clearTimeout(timeoutId);
   }, [successMessage]);
 
-  const handleDeleteResidence = async (id) => {
-    const confirmed = window.confirm('Tem certeza que deseja excluir esta residência?');
-    if (!confirmed) {
+  const handleOpenDeleteModal = (id) => {
+    setSelectedResidenceId(id);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsModalOpen(false);
+    setSelectedResidenceId(null);
+  };
+
+  const handleDeleteResidence = async () => {
+    if (selectedResidenceId == null) {
       return;
     }
 
     try {
-      await api.delete(`/residences/${id}`);
-      setResidences((current) => current.filter((residence) => residence.id !== id));
+      await api.delete(`/residences/${selectedResidenceId}`);
+      setResidences((current) => current.filter((residence) => residence.id !== selectedResidenceId));
       setSuccessMessage('Residência removida com sucesso!');
+      showToast('Residência removida com sucesso!', 'success');
+      handleCloseDeleteModal();
     } catch (error) {
       console.error('Não foi possível excluir a residência.', error);
+      showToast('Não foi possível excluir a residência.', 'error');
     }
   };
 
@@ -418,6 +436,11 @@ function MyResidences() {
         </div>
       ) : null}
     </section>
+    <ConfirmDeleteModal
+      isOpen={isModalOpen}
+      onClose={handleCloseDeleteModal}
+      onConfirm={handleDeleteResidence}
+    />
   );
 }
 

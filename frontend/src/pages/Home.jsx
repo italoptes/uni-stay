@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
+import { useToast } from '../context/ToastContext';
 import { getTypeLabel } from '../utils/residenceLabels';
 
 function ResidenceImage({ imageUrl, className = 'aspect-[4/3] w-full rounded-t-xl' }) {
@@ -134,6 +135,7 @@ function SkeletonCard() {
 }
 
 function Home() {
+  const { showToast } = useToast();
   const [residences, setResidences] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -164,6 +166,7 @@ function Home() {
         setTotalPages(0);
         setTotalElements(0);
         setError('Não foi possível carregar as residências no momento.');
+        showToast('Não foi possível carregar as residências no momento.', 'error');
       } finally {
         setLoading(false);
       }
